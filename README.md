@@ -1,4 +1,8 @@
 # Mr Bean Project Requirements
+## About
+Mr Bean has fans all over the world. He revolutionized the world of comedy as we know it. Especially comedy movies. 
+We want to create a Mr. Bean Merch Online store. We recognized a need in the market, and we have decided that we want 
+to show some appreciation to Mr. Beans’ fans for supporting him through thick and thin. 
  
 ## Deployment requirements:
 Deployed on AWS cloud
