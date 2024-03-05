@@ -15,15 +15,32 @@ import lombok.Data;
 @Entity
 @Data
 public class Address {
-    
-    @Id @GeneratedValue 
-    private Long addressId;
-
-    @Column
+     
+    private @Id @GeneratedValue Long addressId;
     private String latitude;
-
-    @Column
     private String longitude;
 
+    Address() {}
+
+    Address(String latitude, String longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getLongtude() {
+        return longitude;
+    }
+
+    public void setLongtude(String longitude) {
+        this.longitude = longitude;
+    }
 
 }

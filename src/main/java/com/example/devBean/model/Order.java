@@ -10,34 +10,13 @@ import lombok.Data;
 @Data
 public class Order {
     
-    @Id @GeneratedValue 
-    private Long orderId;
-
-    @Column
+    private @Id @GeneratedValue Long orderId;
     private String orderDate; 
-
-    @Column
     private String shipmentDate;
-
-    @Column
     private String arrivalDate;
-
-    @Column
     private String totalPrice; // I will change this when we integrate the server with the database, since postgresql datatype is money, I will add a Currency dependency
-    
-    // @Column
-    // private Status status; // is status necessary? Should be done in the cli or the backend?
-    
-    @Column
-    private String latitude;
-
-    @Column
-    private String longitude;
-
-    @Column
+    private Status status; // is status necessary? Should be done in the cli or the backend?
     private int addressId;
-
-    @Column
     private int customerId; // foreign key
 
     Order() {}
@@ -79,25 +58,17 @@ public class Order {
     public void setTotalPrice(String totalPrice) {
         this.totalPrice = totalPrice;
     }
-    
-    public String getLatitude() {
-        return latitude;
+
+    public Status getStatus() {
+        return status;
     }
 
-    public void setLatitude(String latitude) {
-        this.latitude = latitude;
-    }
-    
-    public String getLongtude() {
-        return longitude;
-    }
-
-    public void setLongtude(String longitude) {
-        this.longitude = longitude;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public int getAddressId() {
-        return customerId;
+        return addressId;
     }
 
     public void setAddressId(int addressId) {

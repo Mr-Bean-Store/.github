@@ -11,17 +11,9 @@ import lombok.Data;
 public class Customer {
     
     private @Id @GeneratedValue Long customerId;
-
-    @Column
     private String firstName;
-
-    @Column
     private String lastName;
-
-    @Column
     private String email;
-
-    @Column
     private String phoneNumber;
     // private String address; // a separate table will be made for address, therefore a separate model class
     // private String password; password is not required since we will be using social logins
