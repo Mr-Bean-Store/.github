@@ -51,7 +51,7 @@ public class OrderItem {
     }
     
     public int getOrderId() {
-        return productId;
+        return orderId;
     }
 
     public void setOrderId(int orderId) {
