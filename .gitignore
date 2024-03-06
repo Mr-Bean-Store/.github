@@ -25,3 +25,6 @@ replay_pid*
 
 # GitHub Actions local testing 
 .secret
+
+# Pulumi Virtual Env
+infrastructure/venv
