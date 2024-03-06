@@ -28,3 +28,4 @@ replay_pid*
 
 # Pulumi Virtual Env
 infrastructure/venv/
+**/*.pyc
