@@ -27,4 +27,4 @@ replay_pid*
 .secret
 
 # Pulumi Virtual Env
-infrastructure/venv
+infrastructure/venv/
