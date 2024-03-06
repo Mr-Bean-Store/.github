@@ -6,6 +6,6 @@ import com.example.devBean.model.Customer;
 /**
  * This Repository class is for the customer model to perform database operations
  */
-interface CustomerRepository extends JpaRepository<Customer, Long> {
+public interface CustomerRepository extends JpaRepository<Customer, Long> {
     
 }

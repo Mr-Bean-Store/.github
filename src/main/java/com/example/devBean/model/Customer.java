@@ -27,6 +27,14 @@ public class Customer {
         this.phoneNumber = phoneNumber;
     }
 
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
+
     public String getName() {
         return this.firstName + " " + this.lastName;
     }

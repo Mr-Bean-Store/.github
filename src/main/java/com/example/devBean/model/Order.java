@@ -12,8 +12,8 @@ public class Order {
     
     private @Id @GeneratedValue Long orderId;
     private String orderDate; 
-    private String shipmentDate;
-    private String arrivalDate;
+    //private String shipmentDate; // We changed the shipment date since we are a local online merch store
+    private String arrivalDate; // date and time
     private String totalPrice; // I will change this when we integrate the server with the database, since postgresql datatype is money, I will add a Currency dependency
     private Status status; // is status necessary? Should be done in the cli or the backend?
     private int addressId;
@@ -35,14 +35,6 @@ public class Order {
         this.orderDate = orderDate;
     }
 
-    public String getShipmentDate() {
-        return this.shipmentDate;
-    }
-
-    public void setShipmentDate(String shipmentDate) {
-        this.shipmentDate = shipmentDate;
-    }
-    
     public String getArrivalDate() {
         return this.arrivalDate;
     }

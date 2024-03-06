@@ -13,13 +13,13 @@ public class OrderItem {
 
     private @Id @GeneratedValue Long orderItemId;
     private String quantity;
-    private String price;
+    private Double price; // or float, 2 decimal places
     private int productId; // foreign key
     private int orderId; // foreign key
 
     OrderItem() {}
 
-    OrderItem(String quantity, String price, int productId, int orderId) {
+    OrderItem(String quantity, Double price, int productId, int orderId) {
         this.quantity = quantity;
         this.price = price;
         this.productId = productId;
@@ -34,11 +34,11 @@ public class OrderItem {
         this.quantity = quantity;
     }
 
-    public String getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 
