@@ -17,6 +17,10 @@ jobs:
           python-version: "3.10"
         env:
           AGENT_TOOLSDIRECTORY: /opt/hostedtoolcache
+      - name: Configure Pulumi Secrets
+        run: |
+          pulumi config set --secret db_user ${{ secrets.DB_USER }}
+          pulumi config set --secret db_password ${{ secrets.DB_PASSWORD }}
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
