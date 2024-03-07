@@ -1,9 +1,10 @@
 package com.example.devBean.dataloader;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Configuration;
+/*
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import com.example.devBean.model.Customer;
 import com.example.devBean.model.Order;
@@ -15,13 +16,13 @@ import com.example.devBean.repository.OrderItemRepository;
 import com.example.devBean.repository.OrderRepository;
 import com.example.devBean.repository.ProductRepository;
 import com.example.devBean.model.Address;
-import com.example.devBean.model.Status;
-
+import com.example.devBean.model.Status; port -> 5432
+*/
 @Configuration
 @Slf4j
 public class LoadDatabase {
     
-    @Bean
+    /*@Bean
     CommandLineRunner initDatabase(CustomerRepository customerRepo, OrderRepository orderRepo, AddressRepository addressRepo, OrderItemRepository orderItemRepo, ProductRepository productRepo) {
         return args -> {
             log.info("Preloading " + customerRepo.save(new Customer("Bilbo", "Baggins", "biblo.baggins@gmail.com", "+27728026231")));
@@ -39,5 +40,5 @@ public class LoadDatabase {
             log.info("Preloading " + productRepo.save(new Product("Mr Beans Suit", "Classic Mr Bean suit, made during Queen Victoria's era", (double)1500)));
 
         };
-    }
+    }*/
 }

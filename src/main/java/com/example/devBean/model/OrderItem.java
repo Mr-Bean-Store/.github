@@ -1,14 +1,19 @@
 package com.example.devBean.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Data;
+import com.example.devBean.model.Product;
 
 @Entity
 @Data
+@Table(name = "OrderItems")
 public class OrderItem {
 
     private @Id @GeneratedValue Long orderItemId;
@@ -16,18 +21,20 @@ public class OrderItem {
     private String quantity;
     @Column
     private Double price; // or float, 2 decimal places
-    @Column
-    private int productId; // foreign key
-    @Column
-    private int orderId; // foreign key
+    
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "fk_productId")
+    private Product product;
+    
+    @ManyToOne(cascade = CascadeType.ALL) // cascade all will save the data from the address object in the Address table in db
+    @JoinColumn(name = "fk_orderId") 
+    private Order order; // foreign key
 
     public OrderItem() {}
 
-    public OrderItem(String quantity, Double price, int productId, int orderId) {
+    public OrderItem(String quantity, Double price) {
         this.quantity = quantity;
         this.price = price;
-        this.productId = productId;
-        this.orderId = orderId;
     }
 
     public String getQuantity() {
@@ -46,19 +53,20 @@ public class OrderItem {
         this.price = price;
     }
 
-    public int getProductId() {
-        return productId;
+    public Product getProduct() {
+        return product;
     }
 
-    public void setProductId(int productId) {
-        this.productId = productId;
-    }
-    
-    public int getOrderId() {
-        return orderId;
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
-    public void setOrderId(int orderId) {
-        this.orderId = orderId;
+    public Order getOrder() {
+        return order;
     }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
+
 }

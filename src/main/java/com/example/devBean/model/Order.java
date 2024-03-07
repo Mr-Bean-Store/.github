@@ -1,13 +1,23 @@
 package com.example.devBean.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.Data;
+import java.sql.Date;
+import java.util.List;
 
 @Entity
 @Data
+@Table(name = "Orders")
 public class Order {
     
     private @Id @GeneratedValue Long orderId;
@@ -20,20 +30,23 @@ public class Order {
     private Double totalPrice; // I will change this when we integrate the server with the database, since postgresql datatype is money, I will add a Currency dependency
     @Column
     private Status status; // is status necessary? Should be done in the cli or the backend?
-    @Column
-    private int addressId;
-    @Column
-    private int customerId; // foreign key
+    
+    @ManyToOne(cascade = CascadeType.ALL) // cascade all will save the data from the address object in the Address table in db
+    @JoinColumn(name = "fk_customerId") 
+    private Customer cust_order; // foreign key
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderItem> orderItems;
+
+    // private Address addr; // this is unnecessary since the customer object already contains an Address object
 
     Order() {}
 
-    public Order(String orderDate, String arrivalDate, Double totalPrice, Status status, int addressId, int customerId) {
+    public Order(String orderDate, String arrivalDate, Double totalPrice, Status status) {
         this.orderDate = orderDate;
         this.arrivalDate = arrivalDate;
         this.totalPrice = totalPrice;
         this.status = status;
-        this.addressId = addressId;
-        this.customerId = customerId;
     }
 
     public String getOrderDate() {
@@ -67,20 +80,18 @@ public class Order {
     public void setStatus(Status status) {
         this.status = status;
     }
-
-    public int getAddressId() {
-        return addressId;
-    }
-
-    public void setAddressId(int addressId) {
-        this.addressId = addressId;
-    }
     
-    public int getCustomerId() {
-        return customerId;
+    public Customer getCustomer() {
+        return cust_order;
     }
 
-    public void setCustomerId(int customerId) {
-        this.customerId = customerId;
+    public void setCustomer(Customer cust_order) {
+        this.cust_order = cust_order;
+    }
+
+    public List<OrderItem> getOrderItems() { return orderItems; }
+
+    public void setOrders(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
     }
 }

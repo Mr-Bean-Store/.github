@@ -1,26 +1,36 @@
 package com.example.devBean.model;
 
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.Data;
 
-@Entity
+@Entity // this annotation specifies that this Java class is mapped to the database table.
 @Data
+@Table(name = "Customers")
 public class Customer {
     
     private @Id @GeneratedValue Long customerId;
-    @Column
     private String firstName;
-    @Column
     private String lastName;
-    @Column
     private String email;
-    @Column
     private String phoneNumber;
-    // private String address; // a separate table will be made for address, therefore a separate model class
-    // private String password; password is not required since we will be using social logins
+    // creates fk cust_addressId
+    @OneToOne(cascade = CascadeType.ALL) // cascade all will save the data from the address object in the Address table in db
+    @JoinColumn(name = "fk_addressId") 
+    private Address cust_addr; // a separate table will be made for address, therefore a separate model class
+    
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "cust_order", cascade = CascadeType.ALL)
+    private List<Order> orders;
 
     Customer() {}
 
@@ -40,7 +50,7 @@ public class Customer {
     }
 
     public String getName() {
-        return this.firstName + " " + this.lastName;
+        return firstName + " " + lastName;
     }
 
     public void setName(String name) {
@@ -50,7 +60,7 @@ public class Customer {
     }
 
     public String getEmail() {
-        return this.email;
+        return email;
     }
 
     public void setEmail(String email) {
@@ -58,10 +68,24 @@ public class Customer {
     }
 
     public String getPhoneNumber() {
-        return this.phoneNumber;
+        return phoneNumber;
     }
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public Address getAddress() {
+        return cust_addr; // for now
+    }
+
+    public void setAddress(Address cust_addr) {
+        this.cust_addr = cust_addr;
+    }
+
+    public List<Order> getOrders() { return orders; }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
     }
 }

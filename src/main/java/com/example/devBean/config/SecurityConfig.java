@@ -19,7 +19,6 @@ public class SecurityConfig {
                 auth.anyRequest().authenticated(); // 
             })
             .oauth2Login(Customizer.withDefaults()) // instead, oauth2 login is used 
-            .formLogin(Customizer.withDefaults()) // for normal username and password
             .build();
     }
 }

@@ -70,7 +70,7 @@ public class CustomerController {
     }
 
     // get one customer of the specified id in the system
-    @GetMapping("/employees/{id}")
+    @GetMapping("/customers/{id}")
     public EntityModel<Customer> oneCustomer(@PathVariable Long id) {
 
         Customer customer = repository.findById(id)
@@ -88,6 +88,7 @@ public class CustomerController {
                 customer.setFirstName(newCustomer.getFirstName());
                 customer.setLastName(newCustomer.getLastName());
                 customer.setPhoneNumber(newCustomer.getPhoneNumber());
+                customer.setAddress(newCustomer.getAddress());
                 return repository.save(customer);
             })
             .orElseGet(() -> {
