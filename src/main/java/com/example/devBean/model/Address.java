@@ -17,12 +17,14 @@ import lombok.Data;
 public class Address {
      
     private @Id @GeneratedValue Long addressId;
+    @Column
     private String latitude;
+    @Column
     private String longitude;
 
     Address() {}
 
-    Address(String latitude, String longitude) {
+    public Address(String latitude, String longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }

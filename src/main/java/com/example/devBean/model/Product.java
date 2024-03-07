@@ -1,19 +1,23 @@
 package com.example.devBean.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
 public class Product {
     
     private @Id @GeneratedValue Long productId;
+    @Column
     private String productName;
+    @Column
     private String description;
-    private String price;
+    @Column
+    private Double price;
     //private String stock; // I think this means if it's still available...
 
-    Product() {}
+    public Product() {}
 
-    Product(String productName, String description, String price) {
+    public Product(String productName, String description, Double price) {
         this.productName = productName;
         this.description = description;
         this.price = price;
@@ -35,11 +39,11 @@ public class Product {
         this.description = description;
     }
 
-    public String getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 }

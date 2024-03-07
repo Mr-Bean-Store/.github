@@ -11,19 +11,28 @@ import lombok.Data;
 public class Order {
     
     private @Id @GeneratedValue Long orderId;
+    @Column
     private String orderDate; 
     //private String shipmentDate; // We changed the shipment date since we are a local online merch store
+    @Column
     private String arrivalDate; // date and time
-    private String totalPrice; // I will change this when we integrate the server with the database, since postgresql datatype is money, I will add a Currency dependency
+    @Column
+    private Double totalPrice; // I will change this when we integrate the server with the database, since postgresql datatype is money, I will add a Currency dependency
+    @Column
     private Status status; // is status necessary? Should be done in the cli or the backend?
+    @Column
     private int addressId;
+    @Column
     private int customerId; // foreign key
 
     Order() {}
 
-    Order(String orderDate, String shipmentDate, String totalPrice, String latitude, String longitude, int customerId) {
+    public Order(String orderDate, String arrivalDate, Double totalPrice, Status status, int addressId, int customerId) {
         this.orderDate = orderDate;
+        this.arrivalDate = arrivalDate;
         this.totalPrice = totalPrice;
+        this.status = status;
+        this.addressId = addressId;
         this.customerId = customerId;
     }
 
@@ -43,11 +52,11 @@ public class Order {
         this.arrivalDate = arrivalDate;
     }
 
-    public String getTotalPrice() {
+    public Double getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(String totalPrice) {
+    public void setTotalPrice(Double totalPrice) {
         this.totalPrice = totalPrice;
     }
 

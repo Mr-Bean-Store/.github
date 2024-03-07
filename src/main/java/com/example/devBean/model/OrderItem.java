@@ -12,14 +12,18 @@ import lombok.Data;
 public class OrderItem {
 
     private @Id @GeneratedValue Long orderItemId;
+    @Column
     private String quantity;
+    @Column
     private Double price; // or float, 2 decimal places
+    @Column
     private int productId; // foreign key
+    @Column
     private int orderId; // foreign key
 
-    OrderItem() {}
+    public OrderItem() {}
 
-    OrderItem(String quantity, Double price, int productId, int orderId) {
+    public OrderItem(String quantity, Double price, int productId, int orderId) {
         this.quantity = quantity;
         this.price = price;
         this.productId = productId;

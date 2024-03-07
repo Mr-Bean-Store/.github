@@ -18,5 +18,4 @@ public class CustomerModelAssembler implements RepresentationModelAssembler<Cust
             linkTo(methodOn(CustomerController.class).oneCustomer(customer.getCustomerId())).withSelfRel(),
             linkTo(methodOn(CustomerController.class).allCustomers()).withRel("customers"));
     }
-    
 }

@@ -1,6 +1,6 @@
 package com.example.devBean.model;
 
-enum Status {
+public enum Status {
     IN_PROGRESS,
     COMPLETED,
     CANCELLED;
