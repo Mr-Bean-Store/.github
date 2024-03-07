@@ -72,17 +72,14 @@ machine_image = ec2.get_ami(
     ],
 )
 
-ec2_instance = ec2.Instance(
-    label("api_server"),
-    instance_type=size,
-    vpc_security_group_ids=[ec2_security_group.id],
-    ami=machine_image.id,
-)
-
 pulumi.export("vpcId", vpc.id)
 pulumi.export("internetGateWayId", internet_gateway.id)
-
+for idx in range(len(zone_names)):
+    pulumi.export(f"subnetId_{zone_names[idx]}", subnets[idx].id)
+    pulumi.export(
+        f"routeTableAssocId_{zone_names[idx]}", route_table_associations[idx].id
+    )
 pulumi.export("ec2SecurityGroupId", ec2_security_group.id)
 pulumi.export("rdsSecurityGroupId", rds_security_group.id)
-pulumi.export("publicIp", ec2_instance.public_ip)
-pulumi.export("publicDns", ec2_instance.public_dns)
+# pulumi.export("publicIp", ec2_instance.public_ip)
+# pulumi.export("publicDns", ec2_instance.public_dns)
