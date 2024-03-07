@@ -11,12 +11,16 @@ jobs:
     name: Preview
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v3
+      - name: Checkout Branch
+        uses: actions/checkout@v2
+      
+      - name: Setup Python
+        uses: actions/setup-python@v3
         with:
           python-version: "3.10"
         env:
           AGENT_TOOLSDIRECTORY: /opt/hostedtoolcache
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
@@ -24,17 +28,16 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE }}
           role-session-name: pulumi-github-oidc
       
-      - name: Setup Pulumi
-        run: | 
-          pip install -r requirements.txt
-          pulumi config set --secret db_user ${{ secrets.DB_USER }}
-          pulumi config set --secret db_password ${{ secrets.DB_PASSWORD }}
+      - name: Setup Pulumi Packages
+        run: pip install -r requirements.txt
         working-directory: infrastructure
       
-      - uses: pulumi/actions@v3
+      - name: Run Pulumi Preview
+        uses: pulumi/actions@v5.1.1
         with:
           command: preview
           stack-name: ${{ secrets.PULUMI_STACK }}
           work-dir: infrastructure
+          config-map: "{db_user: {value: ${{ secrets.DB_USER }}, secret: true}, db_password: {value: ${{ secrets.DB_PASSWORD }}, secret: true}}"
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
