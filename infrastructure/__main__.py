@@ -52,13 +52,12 @@ ec2_security_group = ec2.SecurityGroup(
 )
 
 # Setup RDS Security Group
-# rds_security_group = ec2.SecurityGroup(
-#     label("rds_security_group"),
-#     vpc_id=vpc.id,
-#     description="Allow client access.",
-#     ingress=ingress(ports=[3306]),
-#     egress=egress,
-# )
+rds_security_group = ec2.SecurityGroup(
+    label("rds_security_group"),
+    vpc_id=vpc.id,
+    ingress=ingress(ports=[3306]),
+    egress=egress,
+)
 
 # Get Amazon Machine Image (Amazon Linux)
 machine_image = ec2.get_ami(
