@@ -38,6 +38,11 @@ jobs:
           command: preview
           stack-name: ${{ secrets.PULUMI_STACK }}
           work-dir: infrastructure
-          config-map: "{db_user: {value: ${{ secrets.DB_USER }}, secret: true}, db_password: {value: ${{ secrets.DB_PASSWORD }}, secret: true}}"
+          config-map: |
+            "{
+              db_user: {value: ${{ secrets.DB_USER }}, secret: true}, 
+              db_password: {value: ${{ secrets.DB_PASSWORD }}, secret: true} 
+              ssh_key_name: {value: ${{ secrets.SSH_KEY_NAME}}, secret: true}
+            }"
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
