@@ -18,7 +18,7 @@ route_table = ec2.RouteTable(
     vpc_id=vpc.id,
     routes=[
         ec2.RouteTableRouteArgs(
-            cidr_block=everyone_cidr_blocks,
+            cidr_block=everyone_cidr_blocks[0],
             gateway_id=internet_gateway.id,
         )
     ],
@@ -52,13 +52,13 @@ ec2_security_group = ec2.SecurityGroup(
 )
 
 # Setup RDS Security Group
-rds_security_group = ec2.SecurityGroup(
-    label("rds_security_group"),
-    vpc_id=vpc.id,
-    description="Allow client access.",
-    ingress=ingress(ports=[3306]),
-    egress=egress,
-)
+# rds_security_group = ec2.SecurityGroup(
+#     label("rds_security_group"),
+#     vpc_id=vpc.id,
+#     description="Allow client access.",
+#     ingress=ingress(ports=[3306]),
+#     egress=egress,
+# )
 
 # Get Amazon Machine Image (Amazon Linux)
 machine_image = ec2.get_ami(
@@ -72,6 +72,13 @@ machine_image = ec2.get_ami(
     ],
 )
 
+ec2_instance = ec2.Instance(
+    label("api_server"),
+    instance_type=size,
+    vpc_security_group_ids=[ec2_security_group.id],
+    ami=machine_image.id,
+)
+
 pulumi.export("vpcId", vpc.id)
 pulumi.export("internetGateWayId", internet_gateway.id)
 for idx in range(len(zone_names)):
@@ -81,5 +88,5 @@ for idx in range(len(zone_names)):
     )
 pulumi.export("ec2SecurityGroupId", ec2_security_group.id)
 pulumi.export("rdsSecurityGroupId", rds_security_group.id)
-# pulumi.export("publicIp", ec2_instance.public_ip)
-# pulumi.export("publicDns", ec2_instance.public_dns)
+pulumi.export("publicIp", ec2_instance.public_ip)
+pulumi.export("publicDns", ec2_instance.public_dns)
