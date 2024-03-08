@@ -87,6 +87,6 @@ for idx in range(len(zone_names)):
         f"routeTableAssocId_{zone_names[idx]}", route_table_associations[idx].id
     )
 pulumi.export("ec2SecurityGroupId", ec2_security_group.id)
-pulumi.export("rdsSecurityGroupId", rds_security_group.id)
+# pulumi.export("rdsSecurityGroupId", rds_security_group.id)
 pulumi.export("publicIp", ec2_instance.public_ip)
 pulumi.export("publicDns", ec2_instance.public_dns)
