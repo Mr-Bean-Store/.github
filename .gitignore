@@ -24,7 +24,7 @@ hs_err_pid*
 replay_pid*
 
 # GitHub Actions local testing 
-.secret
+.secret*
 
 # Pulumi Virtual Env
 infrastructure/venv/
@@ -32,3 +32,6 @@ infrastructure/venv/
 
 # Pycharm
 **/.idea/
+
+# For security purposes
+**/.env
