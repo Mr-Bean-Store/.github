@@ -1,0 +1,40 @@
+name: Pulumi Run Command
+on:
+  workflow_call:
+    inputs:
+      command:
+        required: true
+        type: string
+  jobs:
+    - name: Setting up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+      env:
+        AGENT_TOOLSDIRECTORY: /opt/hostedtoolcache
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        aws-region: ${{ secrets.AWS_REGION }}
+        role-to-assume: ${{ secrets.AWS_ROLE }}
+        role-session-name: pulumi-github-oidc
+    
+    - name: Setting up Packages
+      run: pip install -r requirements.txt
+      working-directory: infrastructure
+    
+    - name: Running Command [${{ inputs.command }}]
+      uses: pulumi/actions@v5.1.1
+      with:
+        command: ${{ inputs.command }}
+        stack-name: ${{ secrets.PULUMI_STACK }}
+        work-dir: infrastructure
+        config-map: |
+          "{
+            db_user: {value: ${{ secrets.DB_USER }}, secret: true}, 
+            db_password: {value: ${{ secrets.DB_PASSWORD }}, secret: true} 
+            ssh_key_name: {value: ${{ secrets.SSH_KEY_NAME}}, secret: true}
+          }"
+      env:
+        PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
