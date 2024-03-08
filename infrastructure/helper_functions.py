@@ -14,7 +14,7 @@ egress = [
 
 
 def label(value: str) -> str:
-    return f"mr_bean_store_{value}"
+    return f"mr-bean-store-{value}"
 
 
 def ingress(*, ports: List[int]) -> List[ec2.SecurityGroupIngressArgs]:

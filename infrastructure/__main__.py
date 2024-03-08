@@ -12,11 +12,11 @@ config = pulumi.Config()
 vpc = ec2.Vpc(label("vpc"), cidr_block="10.0.0.0/16")
 
 # Setup Internet Gateway
-internet_gateway = ec2.InternetGateway(label("internet_gateway"), vpc_id=vpc.id)
+internet_gateway = ec2.InternetGateway(label("internet-gateway"), vpc_id=vpc.id)
 
 # Setup Route Table
 route_table = ec2.RouteTable(
-    label("route_table"),
+    label("route-table"),
     vpc_id=vpc.id,
     routes=[
         ec2.RouteTableRouteArgs(
@@ -50,7 +50,7 @@ for zone in zone_names:
 
 # Setup RDS subnet group
 rds_subnet_group = rds.SubnetGroup(
-    label("subnet_group"), subnet_ids=[subnet.id for subnet in subnets]
+    label("subnet-group"), subnet_ids=[subnet.id for subnet in subnets]
 )
 
 
@@ -62,7 +62,7 @@ ec2_security_group = ec2.SecurityGroup(
 
 # Setup RDS Security Group
 rds_security_group = ec2.SecurityGroup(
-    label("rds_security_group"),
+    label("rds-security-group"),
     vpc_id=vpc.id,
     ingress=ingress(ports=[3306]),
     egress=egress,
@@ -70,7 +70,7 @@ rds_security_group = ec2.SecurityGroup(
 
 # Setup RDS Instance
 rds_instance = rds.Instance(
-    label("rds_instance"),
+    label("db"),
     name="mr_bean_store_db",
     allocated_storage=20,
     engine="postgres",
@@ -99,7 +99,7 @@ machine_image = ec2.get_ami(
 )
 
 ec2_instance = ec2.Instance(
-    label("api_server"),
+    label("api-server"),
     instance_type=ec2_instance_type,
     vpc_security_group_ids=[ec2_security_group.id],
     ami=machine_image.id,
