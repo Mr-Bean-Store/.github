@@ -6,6 +6,8 @@ on:
         required: true
         type: string
   jobs:
+    - name: Checkout Branch
+      uses: actions/checkout@v2
     - name: Setting up Python
       uses: actions/setup-python@v3
       with:

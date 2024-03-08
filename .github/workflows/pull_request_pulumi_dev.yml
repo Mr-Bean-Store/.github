@@ -11,8 +11,6 @@ jobs:
     name: Preview
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Branch
-        uses: actions/checkout@v2
       - name: Pulumi
         uses: ./.github/workflows/pulumi_run_command
         with:
