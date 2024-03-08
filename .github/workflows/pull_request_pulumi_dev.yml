@@ -14,7 +14,6 @@ jobs:
       - name: Checkout Branch
         uses: actions/checkout@v2
       - name: Pulumi
-        secrets: inherit
         uses: ./.github/workflows/pulumi_run_command
         with:
           command: preview
