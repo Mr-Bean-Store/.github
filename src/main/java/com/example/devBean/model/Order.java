@@ -20,33 +20,38 @@ import java.util.List;
 @Table(name = "Orders")
 public class Order {
     
-    private @Id @GeneratedValue Long orderId;
-    @Column
-    private String orderDate; 
-    //private String shipmentDate; // We changed the shipment date since we are a local online merch store
-    @Column
-    private String arrivalDate; // date and time
-    @Column
-    private Double totalPrice; // I will change this when we integrate the server with the database, since postgresql datatype is money, I will add a Currency dependency
-    @Column
-    private Status status; // is status necessary? Should be done in the cli or the backend?
+    @Id 
+    @GeneratedValue
+    @Column(name = "id") 
+    private Long orderId;
     
     @ManyToOne(cascade = CascadeType.ALL) // cascade all will save the data from the address object in the Address table in db
-    @JoinColumn(name = "fk_customerId") 
+    @JoinColumn(name = "customer_id") 
     private Customer cust_order; // foreign key
 
+    @ManyToOne(cascade = CascadeType.ALL) // cascade all will save the data from the address object in the Address table in db
+    @JoinColumn(name = "delivery_address_id") 
+    private Address delivery; // a separate table will be made for address, therefore a separate model class
+
+    @Column(name = "created_date")
+    private String orderDate; 
+
+    @Column(name = "completed_date")
+    private String arrivalDate; // date and time
+    
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;
+
+    //private Double totalPrice; // totalPrice is necessary for 
+    //private Status status; // is status necessary? Should be done in the cli or the backend?
 
     // private Address addr; // this is unnecessary since the customer object already contains an Address object
 
     Order() {}
 
-    public Order(String orderDate, String arrivalDate, Double totalPrice, Status status) {
+    public Order(String orderDate, String arrivalDate) {
         this.orderDate = orderDate;
         this.arrivalDate = arrivalDate;
-        this.totalPrice = totalPrice;
-        this.status = status;
     }
 
     public String getOrderDate() {
@@ -63,22 +68,6 @@ public class Order {
 
     public void setArrivalDate(String arrivalDate) {
         this.arrivalDate = arrivalDate;
-    }
-
-    public Double getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(Double totalPrice) {
-        this.totalPrice = totalPrice;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
     }
     
     public Customer getCustomer() {

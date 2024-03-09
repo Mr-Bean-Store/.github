@@ -13,45 +13,27 @@ import com.example.devBean.model.Product;
 
 @Entity
 @Data
-@Table(name = "OrderItems")
+@Table(name = "order_products")
 public class OrderItem {
 
-    private @Id @GeneratedValue Long orderItemId;
-    @Column
-    private String quantity;
-    @Column
-    private Double price; // or float, 2 decimal places
-    
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "fk_productId")
-    private Product product;
-    
+    @Id 
+    @GeneratedValue 
+    @Column(name = "id")
+    private Long orderItemId;
+
     @ManyToOne(cascade = CascadeType.ALL) // cascade all will save the data from the address object in the Address table in db
-    @JoinColumn(name = "fk_orderId") 
+    @JoinColumn(name = "order_id") 
     private Order order; // foreign key
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "product_id")
+    private Product product; // foreign key
+
+    @ManyToOne(cascade = CascadeType.ALL) // cascade all will save the data from the address object in the Address table in db
+    @JoinColumn(name = "price_id") 
+    private Price price; // foreign key
+
     public OrderItem() {}
-
-    public OrderItem(String quantity, Double price) {
-        this.quantity = quantity;
-        this.price = price;
-    }
-
-    public String getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(String quantity) {
-        this.quantity = quantity;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
 
     public Product getProduct() {
         return product;
@@ -69,4 +51,11 @@ public class OrderItem {
         this.order = order;
     }
 
+    public Price getPrice() {
+        return price;
+    }
+
+    public void setPrice(Price price) {
+        this.price = price;
+    }
 }

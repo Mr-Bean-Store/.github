@@ -9,5 +9,6 @@ public class DevBeanApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(DevBeanApplication.class, args);
 	}
-
 }
+
+

@@ -87,8 +87,8 @@ public class CustomerController {
                 customer.setEmail(newCustomer.getEmail());
                 customer.setFirstName(newCustomer.getFirstName());
                 customer.setLastName(newCustomer.getLastName());
-                customer.setPhoneNumber(newCustomer.getPhoneNumber());
-                customer.setAddress(newCustomer.getAddress());
+                customer.setEmail(newCustomer.getEmail());
+                customer.setOrders(newCustomer.getOrders());
                 return repository.save(customer);
             })
             .orElseGet(() -> {

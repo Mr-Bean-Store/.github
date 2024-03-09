@@ -8,60 +8,50 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 import com.example.devBean.model.OrderItem;
+import com.example.devBean.model.Price;
 
 @Entity
 @Data
-@Table(name = "Products")
+@Table(name = "products")
 public class Product {
     
-    private @Id @GeneratedValue Long productId;
-    private String productName;
-    private String description;
-    private Double price;
-    //private String stock; // I think this means if it's still available...
+    @Id 
+    @GeneratedValue 
+    @Column(name = "id")
+    private Long productId;
+
+    @Column(name = "serial_number")
+    private String serialNumber;
+
+    @ManyToOne(cascade = CascadeType.ALL) 
+    @JoinColumn(name = "model_id") 
+    private ProductModel model; // foreign key
+
+    @ManyToOne(cascade = CascadeType.ALL) // cascade all will save the data from the product status object in the product status table
+    @JoinColumn(name = "status_id") 
+    private ProductStatus status; // foreign key
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL)
     private List<OrderItem> items;
 
     public Product() {}
 
-    public Product(String productName, String description, Double price) {
-        this.productName = productName;
-        this.description = description;
-        this.price = price;
+    public Product(String serialNumber) {
+        this.serialNumber = serialNumber;
     }
 
-    public String getProductName() {
-        return productName;
+    public String getSerialNumber() {
+        return serialNumber;
     }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
-
-    public List<OrderItem> getOrderItems() { return items; }
-
-    public void setOrders(List<OrderItem> items) {
-        this.items = items;
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
     }
 }

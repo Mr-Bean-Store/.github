@@ -18,6 +18,14 @@ target/
 *.iws
 *.iml
 *.ipr
+*.p12
+*.key
+*.ext
+*.csr
+*.crt
+*.jks
+*.json
+
 
 ### NetBeans ###
 /nbproject/private/
@@ -26,6 +34,7 @@ target/
 /nbdist/
 /.nb-gradle/
 build/
+keystore
 !**/src/main/**/build/
 !**/src/test/**/build/
 

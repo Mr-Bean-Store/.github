@@ -8,45 +8,46 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-@Entity // this annotation specifies that this Java class is mapped to the database table.
+@Entity
 @Data
 @Table(name = "Customers")
 public class Customer {
     
-    private @Id @GeneratedValue Long customerId;
+    @Id 
+    @GeneratedValue
+    @Column(name = "id")
+    private Long customer_id;
+
+    @Column(name = "first_name")
     private String firstName;
+
+    @Column(name = "last_name")
     private String lastName;
+
+    @Column(name = "email")
     private String email;
-    private String phoneNumber;
-    // creates fk cust_addressId
-    @OneToOne(cascade = CascadeType.ALL) // cascade all will save the data from the address object in the Address table in db
-    @JoinColumn(name = "fk_addressId") 
-    private Address cust_addr; // a separate table will be made for address, therefore a separate model class
     
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "cust_order", cascade = CascadeType.ALL)
-    private List<Order> orders;
+    private List<Order> orders; 
 
     Customer() {}
 
-    public Customer(String firstName, String lastName, String email, String phoneNumber) {
+    public Customer(String firstName, String lastName, String email) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.phoneNumber = phoneNumber;
     }
 
     public Long getCustomerId() {
-        return customerId;
+        return customer_id;
     }
 
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
+    public void setCustomerId(Long customer_id) {
+        this.customer_id = customer_id;
     }
 
     public String getName() {
@@ -65,22 +66,6 @@ public class Customer {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public Address getAddress() {
-        return cust_addr; // for now
-    }
-
-    public void setAddress(Address cust_addr) {
-        this.cust_addr = cust_addr;
     }
 
     public List<Order> getOrders() { return orders; }
