@@ -13,10 +13,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up JDK 11
-      uses: actions/setup-java@v2
-      with:
-        java-version: '11'
+    - name: Set up JDK 21
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y openjdk-17-jdk
+        java -version
 
     - name: Install Maven
       run: sudo apt-get install maven -y
@@ -36,6 +37,7 @@ jobs:
         ec2-user@${{ secrets.EC2_HOSTNAME }} 'mkdir -p /home/ec2-user/devBean && \
         scp -o StrictHostKeyChecking=no -i ${{ secrets.SSH_KEY_NAME }} target/devBean-0.0.1.jar ec2-user@${{ secrets.EC2_HOSTNAME }}:/home/ec2-user/devBean'
 
+
     - name: SSH into EC2 instance and deploy
       uses: appleboy/ssh-action@master
       with:
@@ -44,6 +46,6 @@ jobs:
         key: ${{ secrets.SSH_KEY_NAME }}
         script: |
           ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_KEY_NAME }} ec2-user@${{ secrets.EC2_HOSTNAME }} 'sudo systemctl stop your-app.service'
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_KEY_NAME }} ec2-user@${{ secrets.EC2_HOSTNAME }} 'sudo cp /home/ec2-user/devBean/*.jar /path/to/your-app-directory'
+          ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_KEY_NAME }} ec2-user@${{ secrets.EC2_HOSTNAME }} 'sudo cp /home/ec2-user/devBean/*.jar /opt/myapp'
           ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_KEY_NAME }} ec2-user@${{ secrets.EC2_HOSTNAME }} 'sudo systemctl start your-app.service'
 
