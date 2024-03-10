@@ -4,6 +4,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -40,7 +41,7 @@ public class ProductController {
     public CollectionModel<EntityModel<Product>> allProducts() {
 
         List<EntityModel<Product>> Products = repository.findAll().stream()
-        .map(assembler::toModel).toList();
+        .map(assembler::toModel).collect(Collectors.toList());
 
         return CollectionModel.of(Products,
             linkTo(methodOn(ProductController.class).allProducts()).withSelfRel());

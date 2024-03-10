@@ -54,7 +54,7 @@ public class CustomerController {
     public CollectionModel<EntityModel<Customer>> allCustomers() {
 
         List<EntityModel<Customer>> customers = repository.findAll().stream()
-        .map(assembler::toModel).toList();
+        .map(assembler::toModel).collect(Collectors.toList());
 
         return CollectionModel.of(customers,
             linkTo(methodOn(CustomerController.class).allCustomers()).withSelfRel());
