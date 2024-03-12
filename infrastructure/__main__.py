@@ -86,7 +86,7 @@ rds_instance = rds.Instance(
     password=config.get("db_password"),
     vpc_security_group_ids=[rds_security_group.id],
     skip_final_snapshot=True,
-    publicly_accessible=False,
+    publicly_accessible=True,
 )
 
 
