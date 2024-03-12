@@ -23,3 +23,5 @@ jobs:
           ls -al
           cd .github
           ls -al
+          cd workflows
+          ls -al
