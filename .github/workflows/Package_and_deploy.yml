@@ -41,10 +41,10 @@ jobs:
     - name: Transfer JAR file to EC2 instance
       run: |
         ssh \
-        -i ${{ secrets.SSH_KEY_NAME }} \
+        -i <(${{ secrets.WANDILE_SSH_PRIVATE_KEY }}) \
         -o StrictHostKeyChecking=no \
-        ec2-user@${{ secrets.EC2_HOSTNAME }} 'mkdir -p /home/ec2-user/devBean && \
-        scp -o StrictHostKeyChecking=no -i ${{ secrets.SSH_KEY_NAME }} devBean-0.0.1.jar ec2-user@${{ secrets.EC2_HOSTNAME }}:/home/ec2-user/devBean'
+        ec2-user@${{ secrets.WANDILE_EC2_HOST }} 'mkdir -p /home/ec2-user/devBean && \
+        scp -o StrictHostKeyChecking=no -i <(${{ secrets.WANDILE_SSH_PRIVATE_KEY }}) devBean-0.0.1.jar ec2-user@${{ secrets.WANDILE_EC2_HOST }}:/home/ec2-user/devBean'
 
     - name: SSH into EC2 instance and deploy
       uses: appleboy/ssh-action@master
