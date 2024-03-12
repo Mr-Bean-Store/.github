@@ -126,19 +126,3 @@ elastic_ip = ec2.Eip(label("elastic_ip"))
 elastic_ip_assoc = ec2.EipAssociation(
     "elastic_ip_assoc", instance_id=ec2_instance.id, allocation_id=elastic_ip.id
 )
-
-pulumi.export("vpcId", vpc.id)
-pulumi.export("internetGateWayId", internet_gateway.id)
-for idx in range(len(zone_names)):
-    pulumi.export(f"subnetId_{zone_names[idx]}", subnets[idx].id)
-    pulumi.export(
-        f"routeTableAssocId_{zone_names[idx]}", route_table_associations[idx].id
-    )
-pulumi.export("ec2SecurityGroupId", ec2_security_group.id)
-pulumi.export("rdsSecurityGroupId", rds_security_group.id)
-pulumi.export("ec2Id", ec2_instance.id)
-pulumi.export("publicIp", ec2_instance.public_ip)
-pulumi.export("publicDns", ec2_instance.public_dns)
-pulumi.export("rdsEndpoint", rds_instance.endpoint)
-pulumi.export("rdsPort", rds_instance.port)
-pulumi.export("elasticIp", elastic_ip.public_ip)
