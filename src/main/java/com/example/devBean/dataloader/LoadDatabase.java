@@ -37,6 +37,10 @@ public class LoadDatabase {
 
             //log.info("Preloading " + productRepo.save(new Product("Mr Beans Yellow Car", "State of the art classic car", (double)1000)));
             //log.info("Preloading " + productRepo.save(new Product("Mr Beans Suit", "Classic Mr Bean suit, made during Queen Victoria's era", (double)1500)));
+            /*
+             * 
+             * 
+             */
 
         };
     }
