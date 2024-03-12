@@ -22,3 +22,4 @@ jobs:
         run: |
           ls -al
           cd .github
+          ls -al
