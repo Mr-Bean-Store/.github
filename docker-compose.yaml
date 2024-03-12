@@ -1,9 +1,0 @@
-version: '3'
-services:
-  devbean:
-    image: openjdk:17
-    ports:
-      - "8090:8090"
-    volumes:
-      - ./target/devBean-0.0.1.jar:/app/devBean-0.0.1.jar
-    command: ["java", "-jar", "/app/devBean-0.0.1.jar"]
