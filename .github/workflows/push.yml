@@ -1,4 +1,4 @@
-name: pull_request_pulumi_dev
+name: push
 on:
   push:
     branches:
