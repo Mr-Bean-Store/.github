@@ -1,4 +1,4 @@
-name: Accepted Pull Request
+name: Run Live
 on:
   push:
     branches:
@@ -12,20 +12,8 @@ permissions:
   id-token: write
   contents: read
 jobs:
-  Preview:
+  Run-Live:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_DB: db
-          POSTGRES_USER: user
-          POSTGRES_PASSWORD: password
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     steps:
       - name: Checkout Branch
         uses: actions/checkout@v4
@@ -51,7 +39,7 @@ jobs:
       - name: Run Pulumi Preview
         uses: pulumi/actions@v5.1.1
         with:
-          command: preview
+          command: up
           stack-name: ${{ secrets.PULUMI_STACK }}
           work-dir: infrastructure
           config-map: |
@@ -63,18 +51,21 @@ jobs:
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
       
-      - name: Test Flyway Migrations
+      - name: Create Flyway Config
+        working-directory: infrastructure
+        run: |
+          echo [flyway] >> flyway.toml
+          echo environment="live" >> flyway.toml
+          echo >> flyway.toml
+          echo [environments.live] >> flyway.toml
+          echo url="$(aws rds describe-db-instances --query "DBInstances[?DBName==`${{ secrets.DB_INSTANCE_NAME }}`].Endpoint.Address" --output text)" >> flyway.toml
+          echo user="${{ secrets.DB_USER }}"
+          echo password="${{ secrets.DB_PASSWORD }}"
+      
+      - name: Run Flyway Migrations
         uses: joshuaavalon/flyway-action@v3.0.0
         with:
-          url: jdbc:postgresql://postgres:5432/db
-          user: user
-          password: password
+          configFiles: ./infrastructure/flyway.toml
           locations:  filesystem:./db/migrations
         env:
           FLYWAY_VALIDATE_MIGRATION_NAMING: true
-      
-      - name: Run Pulumi Up
-        #TODO
-        run: echo "#TODO"
-      
-      

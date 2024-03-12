@@ -7,7 +7,7 @@ ec2_instance_type = "t2.micro"
 rds_instance_type = "db.t3.micro"
 all_zones = get_availability_zones()
 config = pulumi.Config()
-domain_name = "mr-bean-store.com"
+domain_name = "mr-bean-store.click"
 
 # Setup VPC
 vpc = ec2.Vpc(label("vpc"), cidr_block="10.0.0.0/16")
