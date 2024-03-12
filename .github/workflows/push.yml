@@ -36,7 +36,7 @@ jobs:
         run: pip install -r requirements.txt
         working-directory: infrastructure        
       
-      - name: Run Pulumi Preview
+      - name: Run Pulumi Up
         uses: pulumi/actions@v5.1.1
         with:
           command: up
@@ -50,6 +50,12 @@ jobs:
             }"
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+
+      - name: Update S3 Env File
+        run:
+          echo AWS_
+          echo DB_USER=${{ secrets.DB_USER }} >> .secrets
+          echo DB_
       
       - name: Create Flyway Config
         working-directory: infrastructure
@@ -62,10 +68,12 @@ jobs:
           echo user="${{ secrets.DB_USER }}"
           echo password="${{ secrets.DB_PASSWORD }}"
       
+      - name: Download Flyway
+        working-directory: infrastructure
+        run: |
+          "wget -qO- https://download.red-gate.com/maven/release/com/redgate/flyway/flyway-commandline/10.9.1/flyway-commandline-10.9.1-linux-x64.tar.gz 
+          | tar -xvz && sudo ln -s `pwd`/flyway-10.9.1/flyway ."
+      
       - name: Run Flyway Migrations
-        uses: joshuaavalon/flyway-action@v3.0.0
-        with:
-          configFiles: ./infrastructure/flyway.toml
-          locations:  filesystem:./db/migrations
-        env:
-          FLYWAY_VALIDATE_MIGRATION_NAMING: true
+        working-directory: infrastructure
+        run: flyway -configFiles="./flyway.toml" migrate

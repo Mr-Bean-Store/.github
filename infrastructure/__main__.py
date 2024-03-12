@@ -119,18 +119,14 @@ ec2_instance = ec2.Instance(
     ami=machine_image.id,
 )
 
-# Create a new Route 53 hosted zone for a domain
-hosted_zone = route53.Zone(label("zone"), name=domain_name)
+# Setup Elastic IP
+elastic_ip = ec2.Eip(label("elastic_ip"))
 
-# Create a DNS record to point to the EC2 instance's public IP
-record = route53.Record(
-    label("www-record"),
-    zone_id=hosted_zone.zone_id,
-    name=domain_name,
-    type="A",
-    ttl=300,
-    records=[ec2_instance.public_ip],
+# Setup Elastic IP association
+elastic_ip_assoc = ec2.EipAssociation(
+    "elastic_ip_assoc", instance_id=ec2_instance.id, allocation_id=elastic_ip.id
 )
+
 pulumi.export("vpcId", vpc.id)
 pulumi.export("internetGateWayId", internet_gateway.id)
 for idx in range(len(zone_names)):
@@ -145,4 +141,4 @@ pulumi.export("publicIp", ec2_instance.public_ip)
 pulumi.export("publicDns", ec2_instance.public_dns)
 pulumi.export("rdsEndpoint", rds_instance.endpoint)
 pulumi.export("rdsPort", rds_instance.port)
-pulumi.export("hostedZoneId", hosted_zone.id)
+pulumi.export("elasticIp", elastic_ip.public_ip)
