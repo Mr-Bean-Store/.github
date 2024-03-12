@@ -1,12 +1,13 @@
 """Pulumi AWS resource provisioning"""
 import pulumi
-from pulumi_aws import ec2, get_availability_zones, rds, route53
+from pulumi_aws import ec2, get_availability_zones, rds, route53, route53domains
 from helper_functions import label, ingress, everyone_cidr_blocks, egress
 
 ec2_instance_type = "t2.micro"
 rds_instance_type = "db.t3.micro"
 all_zones = get_availability_zones()
 config = pulumi.Config()
+domain_name = "mr-bean-store.com"
 
 # Setup VPC
 vpc = ec2.Vpc(label("vpc"), cidr_block="10.0.0.0/16")
@@ -119,13 +120,13 @@ ec2_instance = ec2.Instance(
 )
 
 # Create a new Route 53 hosted zone for a domain
-zone = route53.Zone(label("zone"), name="mr-bean-store.com")
+hosted_zone = route53.Zone(label("zone"), name=domain_name)
 
 # Create a DNS record to point to the EC2 instance's public IP
 record = route53.Record(
     label("www-record"),
-    zone_id=zone.zone_id,
-    name="*.mr-bean-store.com",
+    zone_id=hosted_zone.zone_id,
+    name=domain_name,
     type="A",
     ttl=300,
     records=[ec2_instance.public_ip],
@@ -144,3 +145,4 @@ pulumi.export("publicIp", ec2_instance.public_ip)
 pulumi.export("publicDns", ec2_instance.public_dns)
 pulumi.export("rdsEndpoint", rds_instance.endpoint)
 pulumi.export("rdsPort", rds_instance.port)
+pulumi.export("hostedZoneId", hosted_zone.id)

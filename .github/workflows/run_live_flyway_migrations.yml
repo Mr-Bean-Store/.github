@@ -1,0 +1,19 @@
+name: "Create Flyway config"
+
+on:
+  workflow_call:
+    inputs:
+      db_instance_name:
+        description: 'DB Instance Name, used to pull DB_URL from AWS'
+        required: true
+        type: string
+
+jobs:
+  create-env-File:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout-Repository
+      uses: actions/checkout@v4
+
+    - uses: ./.github/workflows/create_flyway_config.yml
+      secrets: inherit

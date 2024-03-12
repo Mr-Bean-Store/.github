@@ -1,0 +1,36 @@
+name: "create Flyway config"
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+
+jobs:
+  Run-Flyway-Migrations:
+    name: "Run Flyway Migrations"
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: "Download Flyway"
+        run: |
+          "wget -qO- https://download.red-gate.com/maven/release/com/redgate/flyway/flyway-commandline/10.9.1/flyway-commandline-10.9.1-linux-x64.tar.gz 
+          | tar -xvz && sudo ln -s `pwd`/flyway-10.9.1/flyway 
+          /usr/local/bin"
+
+      - name: Checkout DB Branch
+        uses: actions/checkout@v2
+
+      - name: Create Config File
+        working-directory: infrastructure
+        run: |
+          "echo >> flyway.toml"
+          "echo [flyway] >> flyway.toml"
+          "echo environment = "${{ inputs.environment == 'live' && 'live' || 'test' }} >> flyway.toml"
+          "echo locations = ["filesystem:../migrations"] >> flyway.toml"
+          "echo >> flyway.toml"
+          "echo [environments.live] >> flyway.toml"
+          echo url="${{ secrets.DB}}" >> flyway.toml
+          "echo user="postgres >> flywy.toml"
+          "echo password= flyway.toml"
