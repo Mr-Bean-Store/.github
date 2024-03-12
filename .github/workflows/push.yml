@@ -17,7 +17,6 @@ jobs:
     steps:
       - name: Checkout Branch
         uses: actions/checkout@v4
-      
       - name: Run Test Migrations
         working-directory: ./.github/workflows
         uses: './run_flyway_migrations.yml@pulumi_actions'
