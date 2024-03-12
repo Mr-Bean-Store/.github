@@ -36,7 +36,7 @@ jobs:
         run: pip install -r requirements.txt
         working-directory: infrastructure        
       
-      - name: Run Pulumi Preview
+      - name: Run Pulumi Up
         uses: pulumi/actions@v5.1.1
         with:
           command: up
@@ -54,10 +54,24 @@ jobs:
       - name: Getting RDS Endpoint
         run: |
           echo DB_URL="$(aws rds describe-db-instances --query "DBInstances[?DBName==`${{ secrets.DB_INSTANCE_NAME }}`].Endpoint.Address" --output text)"
-          echo "$DB_URL:$(aws rds describe-db-instances --profile ed --query "DBInstances[?DBName==`mr_bean_store_db`].Endpoint.Port" --output text)"
+          echo "$DB_URL:$(aws rds describe-db-instances --profile ed --query "DBInstances[?DBName==`${{ secrets.DB_INSTANCE_NAME }}`].Endpoint.Port" --output text)"
           echo "::add-mask::$DB_URL" 
           echo "DB_URL=$DB_URL" >> $GITHUB_ENV
-      
+
+      - name: Update Secrets File
+        working-directory: infrastructure
+        run: |
+          echo AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }} >> .secrets
+          echo AWS_REGION=${{ secrets.AWS_REGION }} >> .secrets
+          echo EC2_IP=$(aws ec2 describe-instances --query "Reservations[*].Instances[?KeyName==`mr-bean-store-rsa`].PublicIpAddress" --output text) >> .secrets
+          echo DB_USER=${{ secrets.DB_USER }} >> .secrets
+          echo DB_URL=${{ env.DB_URL }}
+          echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .secrets
+          echo PULUMI_ACCESS_TOKEN=${{ secrets.PULUMI_ACCESS_TOKEN }} >> .secrets
+          echo PULUMI_STACK=${{ secrets.PULUMI_STACK }} >> .secrets
+          echo SSH_KEY_NAME=${{ secrets.SSH_KEY_NAME }} >> .secrets
+          aws s3 cp ./.secrets s3://${{ secrets.AWS_BUCKET_NAME }}
+    
       - name: Run Live Flyway Migrations
         uses: joshuaavalon/flyway-action@v3.0.0
         with:
