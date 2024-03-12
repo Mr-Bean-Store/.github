@@ -36,6 +36,9 @@ jobs:
         run: pip install -r requirements.txt
         working-directory: infrastructure
       
+      - name: Check file system
+        run: "ls -al"
+        
       - name: Run Test Migrations
         uses: './.github/workflows/run_flyway_migrations.yml'
         with:
