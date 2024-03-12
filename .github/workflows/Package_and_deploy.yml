@@ -40,7 +40,9 @@ jobs:
 
     - name: Transfer JAR file to EC2 instance
       run: |
-        echo ${{ secrets.WANDILE_SSH_PRIVATE_KEY }} > keyfile.pem 
+        cat > keyfile.pem << EOF
+        ${{ secrets.WANDILE_SSH_PRIVATE_KEY }}
+        EOF
         chmod 400 keyfile.pem 
         ssh -i keyfile.pem \
         -o StrictHostKeyChecking=no \
