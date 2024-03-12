@@ -20,6 +20,5 @@ jobs:
       
       - name: Run Test Migrations
         uses: './.github/workflows/run_flyway_migrations.yml@pulumi_actions'
-        secrets: inherit
         with:
           environment: test
