@@ -40,6 +40,7 @@ jobs:
 
     - name: Transfer JAR file to EC2 instance
       run: |
+        ECHO
         ssh \
         -i <(${{ secrets.WANDILE_SSH_PRIVATE_KEY }}) \
         -o StrictHostKeyChecking=no \
@@ -49,9 +50,9 @@ jobs:
     - name: SSH into EC2 instance and deploy
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.EC2_HOSTNAME }}
+        host: ${{ secrets.WANDILE_EC2_HOST }}
         username: ec2-user
-        key: ${{ secrets.SSH_KEY_NAME }}
+        key: <(${{ secrets.WANDILE_SSH_PRIVATE_KEY }})
         script: |
           ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_KEY_NAME }} ec2-user@${{ secrets.EC2_HOSTNAME }} 'sudo systemctl stop your-app.service'
           ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_KEY_NAME }} ec2-user@${{ secrets.EC2_HOSTNAME }} 'sudo cp /home/ec2-user/devBean/*.jar /opt/myapp'
