@@ -15,10 +15,5 @@ jobs:
   Preview:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Branch
-        uses: actions/checkout@latest
-      - name: Run Test Migrations
-        working-directory: ./.github/workflows
-        uses: './run_flyway_migrations.yml@pulumi_actions'
-          with:
-            environment: test
+      - name: "Checkout Branch"
+        uses: actions/checkout@v4
