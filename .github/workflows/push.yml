@@ -16,9 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       
       - name: Check file system
         run: |
-          "ls -al"
-          "git branch"         
+          ls -al
+          git branch        
