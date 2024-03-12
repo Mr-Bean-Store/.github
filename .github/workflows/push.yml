@@ -19,6 +19,5 @@ jobs:
         uses: actions/checkout@v4
       
       - name: Run Test Migrations
-        uses: './.github/workflows/run_flyway_migrations.yml'
-        with:
-          environment: test
+        run: |
+          ls -al
