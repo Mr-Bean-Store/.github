@@ -16,7 +16,6 @@ import com.example.devBean.repository.OrderItemRepository;
 import com.example.devBean.repository.OrderRepository;
 import com.example.devBean.repository.ProductRepository;
 import com.example.devBean.model.Address;
-import com.example.devBean.model.Status; // port -> 5432
 
 @Configuration
 @Slf4j
