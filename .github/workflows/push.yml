@@ -34,17 +34,7 @@ jobs:
       
       - name: Setup Pulumi Packages
         run: pip install -r requirements.txt
-        working-directory: infrastructure
-      
-      - name: Check file system
-        run: "ls -al"
-
-      - uses: actions/checkout@v2
-      - name: Run Test Migrations
-        uses: './.github/workflows/run_flyway_migrations.yml'
-        with:
-          environment: live
-        
+        working-directory: infrastructure        
       
       - name: Run Pulumi Preview
         uses: pulumi/actions@v5.1.1
@@ -60,3 +50,12 @@ jobs:
             }"
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+
+            
+      - name: Check file system
+        run: "ls -al ./.github"
+
+      - name: Run Test Migrations
+        uses: './.github/workflows/run_flyway_migrations.yml@pulumi_actions'
+        with:
+          environment: test
