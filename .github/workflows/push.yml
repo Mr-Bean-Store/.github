@@ -21,6 +21,11 @@ jobs:
       - name: Check Branch
         run: git branch
 
+      - name: Go to workflows
+        run: |
+          cd ./.github/workflows
+          ls -al
+
       - name: Run Test Migrations
         uses: ./.github/workflows/run_flyway_migrations.yml
         with:
