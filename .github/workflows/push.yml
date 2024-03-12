@@ -2,7 +2,7 @@ name: pull_request_pulumi_dev
 on:
   push:
     branches:
-      - feature/pulumi_aws_connection
+      - feature/pulumi_*
       - main
       - develop
 permissions:
