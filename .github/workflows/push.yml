@@ -53,12 +53,12 @@ jobs:
 
             
       - name: Check file system
-        working-directory: ./.github/workflows
         run: |
           "ls -al"
           "git branch"
 
       - name: Run Test Migrations
-        uses: 'run_flyway_migrations.yml@pulumi_actions'
-        with:
-          environment: test
+        working-directory: ./.github/workflows
+        uses: './run_flyway_migrations.yml@pulumi_actions'
+          with:
+            environment: test
