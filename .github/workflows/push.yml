@@ -35,7 +35,6 @@ jobs:
       
       - name: Run Test Migrations
         uses: './github/workflows/run_flyway_migrations.yml'
-        secrets: inherit
         with:
           environment: live
         
