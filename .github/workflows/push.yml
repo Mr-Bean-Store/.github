@@ -38,7 +38,8 @@ jobs:
       
       - name: Check file system
         run: "ls -al"
-        
+
+      - uses: actions/checkout@v2
       - name: Run Test Migrations
         uses: './.github/workflows/run_flyway_migrations.yml'
         with:
