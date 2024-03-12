@@ -14,6 +14,18 @@ permissions:
 jobs:
   Preview:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: db
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout Branch
         uses: actions/checkout@v4
@@ -51,30 +63,15 @@ jobs:
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
       
+      - name: Test Flyway Migrations
+        uses: joshuaavalon/flyway-action@v3.0.0
+        with:
+          url: jdbc:postgresql://postgres:5432/db
+          user: user
+          password: password
+      
       - name: Run Pulumi Up
         #TODO
         run: echo "#TODO"
       
-      - name: "Download Flyway"
-        run: |
-          "wget -qO- https://download.red-gate.com/maven/release/com/redgate/flyway/flyway-commandline/10.9.1/flyway-commandline-10.9.1-linux-x64.tar.gz 
-          | tar -xvz && sudo ln -s `pwd`/flyway-10.9.1/flyway 
-          /usr/local/bin"
       
-      
-      - name: Create Config File
-        working-directory: infrastructure
-        run: |
-          "echo >> flyway.toml"
-          "echo [flyway] >> flyway.toml"
-          "echo environment = "${{ inputs.environment == 'live' && 'live' || 'test' }} >> flyway.toml"
-          "echo locations = ["filesystem:../migrations"] >> flyway.toml"
-          "echo >> flyway.toml"
-          "echo [environments.live] >> flyway.toml"
-          "echo url="$(aws rds describe-db-instances --profile ed --query "DBInstances[?DBName==`${{ secrets.DB_INSTANCE_NAME }}`].Endpoint.Address" --output text)" >> flyway.toml
-          "echo user="${{ secrets.DB_INSTANCE_NAME }}" >> flywy.toml"
-          "echo password="${{ secrets.DB_PASSWORD }}" >> flyway.toml"
-
-      - name: Run Flyway Migrations
-        working-directory: infrastructure
-        run: flyway -configFile="./flyway.toml"
