@@ -13,13 +13,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up JDK 
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y openjdk-21-jdk
-        java -version
-    - name: Install Maven
-      run: sudo apt-get install maven -y
+    - name: Set up JDK 21
+      uses: actions/setup-java@v3
+      with:
+        java-version: '21'
+        distribution: 'corretto'
+        cache: maven
 
     - name: Build Spring Boot JAR
       run: |
