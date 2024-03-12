@@ -10,7 +10,12 @@ config = pulumi.Config()
 domain_name = "mr-bean-store.click"
 
 # Setup VPC
-vpc = ec2.Vpc(label("vpc"), cidr_block="10.0.0.0/16")
+vpc = ec2.Vpc(
+    label("vpc"),
+    cidr_block="10.0.0.0/16",
+    enable_dns_hostnames=True,
+    enable_dns_support=True,
+)
 
 # Setup Internet Gateway
 internet_gateway = ec2.InternetGateway(label("internet-gateway"), vpc_id=vpc.id)
@@ -32,13 +37,13 @@ route_table = ec2.RouteTable(
 zone_names = [all_zones.names[0], all_zones.names[1]]
 subnets = []
 route_table_associations = []
-for zone in zone_names:
+for idx, zone in enumerate(zone_names):
     subnet = ec2.Subnet(
         label(f"subnet_{zone}"),
         assign_ipv6_address_on_creation=False,
         vpc_id=vpc.id,
-        map_public_ip_on_launch=True,
-        cidr_block=f"10.0.{len(subnets)}.0/24",
+        map_public_ip_on_launch=(idx == 0),
+        cidr_block=f"10.0.{idx}.0/24",
         availability_zone=zone,
     )
     route_table_association = ec2.RouteTableAssociation(
