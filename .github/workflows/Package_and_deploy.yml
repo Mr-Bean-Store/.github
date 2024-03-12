@@ -40,7 +40,7 @@ jobs:
 
     - name: Transfer JAR file to EC2 instance
       run: |
-        ECHO
+        echo
         ssh \
         -i <(${{ secrets.WANDILE_SSH_PRIVATE_KEY }}) \
         -o StrictHostKeyChecking=no \
