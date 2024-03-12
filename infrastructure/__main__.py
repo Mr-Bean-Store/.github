@@ -68,7 +68,7 @@ ec2_security_group = ec2.SecurityGroup(
 rds_security_group = ec2.SecurityGroup(
     label("rds-security-group"),
     vpc_id=vpc.id,
-    ingress=ingress(ports=[3306]),
+    ingress=ingress(ports=[5432]),
     egress=egress,
 )
 
@@ -81,7 +81,7 @@ rds_instance = rds.Instance(
     engine_version="16.2",
     instance_class=rds_instance_type,
     storage_type="gp2",
-    db_subnet_group_name=rds_subnet_group.id,
+    db_subnet_group_name=rds_subnet_group.name,
     username=config.get("db_user"),
     password=config.get("db_password"),
     vpc_security_group_ids=[rds_security_group.id],
