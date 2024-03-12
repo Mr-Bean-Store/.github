@@ -69,6 +69,9 @@ jobs:
           url: jdbc:postgresql://postgres:5432/db
           user: user
           password: password
+          locations:  filesystem:./db/migrations
+        env:
+          FLYWAY_VALIDATE_MIGRATION_NAMING: true
       
       - name: Run Pulumi Up
         #TODO
