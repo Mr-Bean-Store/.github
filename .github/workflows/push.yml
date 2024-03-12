@@ -53,8 +53,10 @@ jobs:
 
             
       - name: Check file system
-        run: "ls -al ./.github"
-
+        run: |
+          "ls -al ./.github/workflows"
+          "git branch"
+          
       - name: Run Test Migrations
         uses: './.github/workflows/run_flyway_migrations.yml@pulumi_actions'
         with:
