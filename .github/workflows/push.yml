@@ -36,7 +36,7 @@ jobs:
         run: pip install -r requirements.txt
         working-directory: infrastructure        
       
-      - name: Run Pulumi Up
+      - name: Run Pulumi Preview
         uses: pulumi/actions@v5.1.1
         with:
           command: up
@@ -50,30 +50,20 @@ jobs:
             }"
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
-
-      - name: Update S3 Env File
-        run:
-          echo AWS_
-          echo DB_USER=${{ secrets.DB_USER }} >> .secrets
-          echo DB_
       
-      - name: Create Flyway Config
-        working-directory: infrastructure
+      - name: Getting RDS Endpoint
         run: |
-          echo [flyway] >> flyway.toml
-          echo environment="live" >> flyway.toml
-          echo >> flyway.toml
-          echo [environments.live] >> flyway.toml
-          echo url="$(aws rds describe-db-instances --query "DBInstances[?DBName==`${{ secrets.DB_INSTANCE_NAME }}`].Endpoint.Address" --output text)" >> flyway.toml
-          echo user="${{ secrets.DB_USER }}"
-          echo password="${{ secrets.DB_PASSWORD }}"
+          echo DB_URL="$(aws rds describe-db-instances --query "DBInstances[?DBName==`${{ secrets.DB_INSTANCE_NAME }}`].Endpoint.Address" --output text)"
+          echo "$DB_URL:$(aws rds describe-db-instances --profile ed --query "DBInstances[?DBName==`mr_bean_store_db`].Endpoint.Port" --output text)"
+          echo "::add-mask::$DB_URL" 
+          echo "DB_URL=$DB_URL" >> $GITHUB_ENV
       
-      - name: Download Flyway
-        working-directory: infrastructure
-        run: |
-          "wget -qO- https://download.red-gate.com/maven/release/com/redgate/flyway/flyway-commandline/10.9.1/flyway-commandline-10.9.1-linux-x64.tar.gz 
-          | tar -xvz && sudo ln -s `pwd`/flyway-10.9.1/flyway `pwd`"
-      
-      - name: Run Flyway Migrations
-        working-directory: infrastructure
-        run: flyway -configFiles="./flyway.toml" migrate
+      - name: Run Live Flyway Migrations
+        uses: joshuaavalon/flyway-action@v3.0.0
+        with:
+          url: ${{ env.DB_URL }} 
+          user: ${{ secrets.DB_USER }}
+          password: ${{ secrets.DB_PASSWORD }}
+          locations:  filesystem:./db/migrations
+        env:
+          FLYWAY_VALIDATE_MIGRATION_NAMING: true
