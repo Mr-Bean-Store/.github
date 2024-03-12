@@ -55,7 +55,7 @@ jobs:
       - name: Getting RDS Endpoint
         run: |
           DB_URL="$(aws rds describe-db-instances --query "DBInstances[?DBName=='${{ secrets.DB_INSTANCE_NAME }}'].Endpoint.Address" --output text)"
-          DB_URL="$DB_URL:$(aws rds describe-db-instances --profile ed --query "DBInstances[?DBName=='${{ secrets.DB_INSTANCE_NAME }}'].Endpoint.Port" --output text)"
+          DB_URL="$DB_URL:$(aws rds describe-db-instances --query "DBInstances[?DBName=='${{ secrets.DB_INSTANCE_NAME }}'].Endpoint.Port" --output text)"
           echo "::add-mask::$DB_URL" 
           echo "DB_URL=$DB_URL" >> $GITHUB_ENV
 
