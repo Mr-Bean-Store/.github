@@ -5,6 +5,10 @@ on:
     branches:
       - devwasabi/feature/restAPI  # Adjust this if you're using a different default branch
 
+permissions:
+  id-token: write
+  contents: read
+  
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -23,6 +27,7 @@ jobs:
     - name: Build Spring Boot JAR
       run: |
         mvn clean package -DskipTests=true
+
     - name: Install SSH
       run: sudo apt-get install openssh-client -y
 
