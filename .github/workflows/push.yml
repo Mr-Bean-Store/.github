@@ -68,7 +68,7 @@ jobs:
           echo DB_USER=${{ secrets.DB_USER }} >> .secrets
           echo DB_URL=${{ env.DB_URL }} >> .secrets
           echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .secrets
-          echo DB_INSTANCE_NAME=${{ secrets.DB_INSTANCE_NAME }}
+          echo DB_INSTANCE_NAME=${{ secrets.DB_INSTANCE_NAME }} >> .secrets
           echo PULUMI_ACCESS_TOKEN=${{ secrets.PULUMI_ACCESS_TOKEN }} >> .secrets
           echo PULUMI_STACK=${{ secrets.PULUMI_STACK }} >> .secrets
           echo SSH_KEY_NAME=${{ secrets.SSH_KEY_NAME }} >> .secrets
