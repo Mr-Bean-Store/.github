@@ -15,7 +15,12 @@ jobs:
   Preview:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Branch
+        uses: actions/checkout@v4
+      
+      - name: Check Branch
+        run: git branches
+        
       - name: Run Test Migrations
         uses: ./.github/workflows/run_flyway_migrations.yml
         with:
