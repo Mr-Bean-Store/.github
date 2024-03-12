@@ -16,12 +16,42 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
       
-      - name: Check Branch
-        run: git branch
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+        env:
+          AGENT_TOOLSDIRECTORY: /opt/hostedtoolcache
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+          role-session-name: pulumi-github-oidc
+      
+      - name: Setup Pulumi Packages
+        run: pip install -r requirements.txt
+        working-directory: infrastructure        
+      
+      - name: Run Pulumi Preview
+        uses: pulumi/actions@v5.1.1
+        with:
+          command: preview
+          stack-name: ${{ secrets.PULUMI_STACK }}
+          work-dir: infrastructure
+          config-map: |
+            "{
+              db_user: {value: ${{ secrets.DB_USER }}, secret: true}, 
+              db_password: {value: ${{ secrets.DB_PASSWORD }}, secret: true} 
+              ssh_key_name: {value: ${{ secrets.SSH_KEY_NAME}}, secret: true}
+            }"
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+          
       - name: Run Test Migrations
-        uses: ./.github/actions/run_flyway_migrations
+        uses: ./.github/workflows/run_flyway_migrations.yml
         with:
           environment: test
