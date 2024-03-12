@@ -54,8 +54,8 @@ jobs:
       
       - name: Getting RDS Endpoint
         run: |
-          echo DB_URL="$(aws rds describe-db-instances --query "DBInstances[?DBName==`${{ secrets.DB_INSTANCE_NAME }}`].Endpoint.Address" --output text)"
-          echo "$DB_URL:$(aws rds describe-db-instances --profile ed --query "DBInstances[?DBName==`${{ secrets.DB_INSTANCE_NAME }}`].Endpoint.Port" --output text)"
+          echo DB_URL="$(aws rds describe-db-instances --query "DBInstances[?DBName=='${{ secrets.DB_INSTANCE_NAME }}'].Endpoint.Address" --output text)"
+          echo "$DB_URL:$(aws rds describe-db-instances --profile ed --query "DBInstances[?DBName=='${{ secrets.DB_INSTANCE_NAME }}'].Endpoint.Port" --output text)"
           echo "::add-mask::$DB_URL" 
           echo "DB_URL=$DB_URL" >> $GITHUB_ENV
 
@@ -64,7 +64,7 @@ jobs:
         run: |
           echo AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }} >> .secrets
           echo AWS_REGION=${{ secrets.AWS_REGION }} >> .secrets
-          echo EC2_IP=$(aws ec2 describe-instances --query "Reservations[*].Instances[?KeyName==`mr-bean-store-rsa`].PublicIpAddress" --output text) >> .secrets
+          echo EC2_IP=$(aws ec2 describe-instances --query "Reservations[*].Instances[?KeyName=='mr-bean-store-rsa'].PublicIpAddress" --output text) >> .secrets
           echo DB_USER=${{ secrets.DB_USER }} >> .secrets
           echo DB_URL=${{ env.DB_URL }}
           echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .secrets
