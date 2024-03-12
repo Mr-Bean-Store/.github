@@ -30,14 +30,13 @@ jobs:
 
     - name: Install SSH
       run: sudo apt-get install openssh-client -y
-
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v3
       with:
         aws-region: ${{ secrets.AWS_REGION }}
         role-to-assume: ${{ secrets.AWS_ROLE }}
         role-session-name: pulumi-github-oidc
-
+        
     - name: Transfer JAR file to EC2 instance
       run: |
         cat > keyfile.pem << EOF
