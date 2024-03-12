@@ -22,6 +22,14 @@ jobs:
       - name: Checkout DB Branch
         uses: actions/checkout@v2
 
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+          role-session-name: pulumi-github-oidc 
+      
       - name: Create Config File
         working-directory: infrastructure
         run: |
@@ -31,6 +39,6 @@ jobs:
           "echo locations = ["filesystem:../migrations"] >> flyway.toml"
           "echo >> flyway.toml"
           "echo [environments.live] >> flyway.toml"
-          echo url="${{ secrets.DB}}" >> flyway.toml
-          "echo user="postgres >> flywy.toml"
-          "echo password= flyway.toml"
+          "echo url="$(aws rds describe-db-instances --profile ed --query "DBInstances[?DBName==`${{ secrets.DB_INSTANCE_NAME }}`].Endpoint.Address" --output text)" >> flyway.toml
+          "echo user="${{ secrets.DB_INSTANCE_NAME }}" >> flywy.toml"
+          "echo password="${{ secrets.DB_PASSWORD }}" >> flyway.toml"
