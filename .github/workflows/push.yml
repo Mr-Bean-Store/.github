@@ -92,6 +92,13 @@ jobs:
       #   env:
       #     FLYWAY_VALIDATE_MIGRATION_NAMING: true
 
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'corretto'
+          cache: maven
+
       - name: Build Server Artifacts
         working-directory: server
         run: |
