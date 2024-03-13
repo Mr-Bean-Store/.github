@@ -128,6 +128,9 @@ jobs:
           asset_path: ./server/target/devBean-0.0.1.jar
           asset_name: devBean-0.0.1.jar
           asset_content_type: application/jar
+      
+      - name: Echo Download URL
+        run: echo "${{ steps.release_artifact.outputs.browser_download_url }}"
 
       - name: Deploy Server
         uses: dawidd6/action-ansible-playbook@v2
