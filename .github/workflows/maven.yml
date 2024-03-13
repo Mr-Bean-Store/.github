@@ -32,7 +32,6 @@ jobs:
         export SPRING_DATASOURCE_URL=jdbc:postgresql://${{ env.DB_URL }}/${{ secrets.DB_INSTANCE_NAME }}
         export SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USER }}
         export SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }}
-        sudo kill -9 `sudo lsof -t -i:8090`
-        sudo java -jar /home/ubuntu/actions-runner/_work/MrBeanStore/MrBeanStore/target/devBean-0.0.1.jar &
+        sudo kill -9 `sudo lsof -t -i:8090` & sudo java -jar /home/ubuntu/actions-runner/_work/MrBeanStore/MrBeanStore/target/devBean-0.0.1.jar &
 
     
