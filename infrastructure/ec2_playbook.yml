@@ -10,7 +10,7 @@
     - name: Download Server Jar
       ansible.builtin.shell: |
         cd ~ &&
-        rm -rf ./devBean-0.0.1.jar &&
+        rm -rf ./devBean-0.0.1-fat-jar.jar &&
         wget {{ SERVER_JAR_PATH }}
     
     - name: Kill Previous Server Instance
@@ -19,7 +19,7 @@
 
     - name: Start Server
       ansible.builtin.shell: |
-        nohup java -jar ~/devBean-0.0.1.jar & disown
+        nohup java -jar ~/devBean-0.0.1-fat-jar.jar & disown
       async: 10
       poll: 0
 
