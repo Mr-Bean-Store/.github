@@ -88,3 +88,4 @@ jobs:
         uses: dawidd6/action-ansible-playbook@v2
         with:
           playbook: ./infrastructure/ec2_playbook.yml
+          key: ${{ secrets.ANSIBLE_KEY }}
