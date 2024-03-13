@@ -24,7 +24,7 @@ public class Address {
     private Long addressId;
     @Column(name = "latitude")
     private String latitude;
-    @Column(name = "latitude")
+    @Column(name = "longitude")
     private String longitude;
 
     Address() {}
