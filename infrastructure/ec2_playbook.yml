@@ -19,7 +19,7 @@
 
     - name: Start Server
       ansible.builtin.shell: |
-        cd ~ && java -jar ./devBean-0.0.1.jar --spring.datasource.url=jdbc:postgresql://${{ DB_URL }}/${{ DB_INSTANCE_NAME }} --spring.datasource.username=${{ DB_USER }} --spring.datasource.password=${{ DB_PASSWORD }} & disown
+        cd ~ && java -jar ./devBean-0.0.1.jar &
 
     - name: Print message
       ansible.builtin.debug:
