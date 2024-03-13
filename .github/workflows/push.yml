@@ -120,8 +120,8 @@ jobs:
         with:
           tag_name: ${{ steps.tag.outputs.new_tag }}
       
-      - name: Upload Release Asset
-        id: upload-release-asset 
+      - name: Upload Release Artifact
+        id: release_artifact
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
@@ -142,4 +142,4 @@ jobs:
           requirements: ./infrastructure/roles/requirements.yml
           options: |
             -u ec2-user
-            --extra-vars "SERVER_JAR_PATH=${{ steps.create_release.outputs.upload_url }}"
+            --extra-vars "SERVER_JAR_PATH=${{ steps.release_artifact.outputs.artifact-url }}"
