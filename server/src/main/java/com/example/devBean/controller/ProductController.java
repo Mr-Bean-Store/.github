@@ -31,7 +31,7 @@ public class ProductController {
     private final ProductModelAssembler assembler;
 
     
-    ProductController(ProductRepository repository, ProductModelAssembler assembler) {
+    public ProductController(ProductRepository repository, ProductModelAssembler assembler) {
         this.repository = repository;
         this.assembler = assembler;
     }

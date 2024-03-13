@@ -22,8 +22,6 @@ import com.example.devBean.repository.CustomerRepository;
 import com.example.devBean.assembler.CustomerModelAssembler;
 import com.example.devBean.exception.CustomerNotFoundException;
 import com.example.devBean.model.Customer;
-import jakarta.persistence.Entity;
-import org.springframework.stereotype.Component;
 
 /**
  * We have routes for each operations (@GetMapping, @PostMapping, @PutMapping and @DeleteMapping, corresponding to HTTP GET, POST, PUT, and DELETE calls
@@ -44,7 +42,7 @@ public class CustomerController {
     private final CustomerModelAssembler assembler;
 
     
-    CustomerController(CustomerRepository repository, CustomerModelAssembler assembler) {
+    public CustomerController(CustomerRepository repository, CustomerModelAssembler assembler) {
         this.repository = repository;
         this.assembler = assembler;
     }

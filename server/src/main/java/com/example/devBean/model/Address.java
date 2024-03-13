@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
 
 /**
@@ -14,34 +15,22 @@ import lombok.Data;
 
 @Entity
 @Data
+@Table(name = "addresses")
 public class Address {
      
-    private @Id @GeneratedValue Long addressId;
-    @Column
+    @Id 
+    @GeneratedValue
+    @Column(name = "id")
+    private Long addressId;
+    @Column(name = "latitude")
     private String latitude;
-    @Column
+    @Column(name = "longitude")
     private String longitude;
 
     Address() {}
 
     public Address(String latitude, String longitude) {
         this.latitude = latitude;
-        this.longitude = longitude;
-    }
-
-    public String getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(String latitude) {
-        this.latitude = latitude;
-    }
-
-    public String getLongtude() {
-        return longitude;
-    }
-
-    public void setLongtude(String longitude) {
         this.longitude = longitude;
     }
 

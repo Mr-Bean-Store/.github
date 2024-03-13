@@ -17,7 +17,7 @@ import java.util.List;
 
 @Entity
 @Data
-@Table(name = "Orders")
+@Table(name = "orders")
 public class Order {
     
     @Id 
@@ -25,9 +25,9 @@ public class Order {
     @Column(name = "id") 
     private Long orderId;
     
-    @ManyToOne(cascade = CascadeType.ALL) // cascade all will save the data from the address object in the Address table in db
+    @ManyToOne(cascade = CascadeType.ALL) // cascade all will save the data from the customer object in the Customer table in db
     @JoinColumn(name = "customer_id") 
-    private Customer cust_order; // foreign key
+    private Customer customer; // foreign key
 
     @ManyToOne(cascade = CascadeType.ALL) // cascade all will save the data from the address object in the Address table in db
     @JoinColumn(name = "delivery_address_id") 
@@ -42,45 +42,10 @@ public class Order {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;
 
-    //private Double totalPrice; // totalPrice is necessary for 
-    //private Status status; // is status necessary? Should be done in the cli or the backend?
-
-    // private Address addr; // this is unnecessary since the customer object already contains an Address object
-
     Order() {}
 
     public Order(String orderDate, String arrivalDate) {
         this.orderDate = orderDate;
         this.arrivalDate = arrivalDate;
-    }
-
-    public String getOrderDate() {
-        return orderDate;
-    }
-
-    public void setOrderDate(String orderDate) {
-        this.orderDate = orderDate;
-    }
-
-    public String getArrivalDate() {
-        return this.arrivalDate;
-    }
-
-    public void setArrivalDate(String arrivalDate) {
-        this.arrivalDate = arrivalDate;
-    }
-    
-    public Customer getCustomer() {
-        return cust_order;
-    }
-
-    public void setCustomer(Customer cust_order) {
-        this.cust_order = cust_order;
-    }
-
-    public List<OrderItem> getOrderItems() { return orderItems; }
-
-    public void setOrders(List<OrderItem> orderItems) {
-        this.orderItems = orderItems;
     }
 }
