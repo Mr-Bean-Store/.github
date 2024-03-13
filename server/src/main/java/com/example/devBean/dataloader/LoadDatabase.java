@@ -24,10 +24,10 @@ public class LoadDatabase {
     @Bean
     CommandLineRunner initDatabase(CustomerRepository customerRepo, OrderRepository orderRepo, AddressRepository addressRepo, OrderItemRepository orderItemRepo, ProductRepository productRepo) {
         return args -> {
-            log.info("Preloading " + customerRepo.save(new Customer("Bilbo", "Baggins", "biblo.baggins@gmail.com")));
-            log.info("Preloading " + customerRepo.save(new Customer("Mithrindir", "Gandalf","mithrindir.gandalf@gmail.com")));
+            //log.info("Preloading " + customerRepo.save(new Customer("Bilbo", "Baggins", "biblo.baggins@gmail.com")));
+            //log.info("Preloading " + customerRepo.save(new Customer("Mithrindir", "Gandalf","mithrindir.gandalf@gmail.com")));
             
-            //log.info("Preloading " + addressRepo.save(new Address(" -26.144836", "28.042178")));
+            log.info("Preloading " + addressRepo.save(new Address(" -26.144836", "28.042178")));
             
             //log.info("Preloading " + orderRepo.save(new Order("01-03-2024", "05-03-2024")));
             //log.info("Preloading " + orderRepo.save(new Order("28-02-2024", "15-03-2024")));
