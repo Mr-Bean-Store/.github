@@ -104,7 +104,8 @@ jobs:
         with:
           bump_version_scheme: minor
           tag_prefix: v
-    
+          release_body: "Latest Release"
+
       - name: Build Server Artifacts
         working-directory: server
         run: |
