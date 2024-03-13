@@ -27,11 +27,19 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn -B package --file pom.xml
-    - name: Connet to Database and Execute Jar File
+
+    - name: Getting RDS Endpoint
       run: |
-        export SPRING_DATASOURCE_URL=jdbc:postgresql://${{ env.DB_URL }}/${{ secrets.DB_INSTANCE_NAME }}
-        export SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USER }}
-        export SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }}
-        sudo kill -9 `sudo lsof -t -i:8090` & sudo java -jar /home/ubuntu/actions-runner/_work/MrBeanStore/MrBeanStore/target/devBean-0.0.1.jar &
+        DB_URL="$(aws rds describe-db-instances --query "DBInstances[?DBName=='${{ secrets.DB_INSTANCE_NAME }}'].Endpoint.Address" --output text)"
+        echo "::add-mask::$DB_URL" 
+        echo "DB_URL=$DB_URL" >> $GITHUB_ENV
+        
+    - name: Connect to Database and Execute Jar File
+      run: |
+        sudo kill -9 `sudo lsof -t -i:8090` && sudo java -jar /home/ubuntu/actions-runner/_work/MrBeanStore/MrBeanStore/target/devBean-0.0.1.jar \
+        --spring.datasource.url=jdbc:postgresql://${{ env.DB_URL }}/${{ secrets.DB_INSTANCE_NAME }} \
+        --spring.datasource.username=${{ secrets.DB_USER }} \
+        --spring.datasource.password=${{ secrets.DB_PASSWORD }} &
+
 
     
