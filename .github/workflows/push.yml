@@ -92,6 +92,9 @@ jobs:
         with:
           playbook: ./infrastructure/ec2_playbook.yml
           key: ${{ secrets.ANSIBLE_KEY }}
+          configuration: |
+            [defaults] 
+            timeout = 30 
           inventory: |
             [all]
             ${{ env.EC2_IP }}

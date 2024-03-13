@@ -1,3 +1,0 @@
-[environments.test]
-url = "jdbc:postgresql://localhost/temp_test_db"
-user = "test_user"
