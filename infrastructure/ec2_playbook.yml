@@ -1,18 +1,6 @@
 - name: Set Up Server
   hosts: all
   tasks:
-    - name: Link Python3
-      ansible.builtin.shell: |
-        rm /usr/bin/python 2> /dev/null && 
-        ln -s /usr/bin/python3.9 /usr/bin/python
-      become: true
-
-    - name: Install Git
-      ansible.builtin.dnf:
-        name: git
-        state: latest
-      become: true
-
     - name: Install Java
       ansible.builtin.dnf:
         name:  java-21-amazon-corretto
@@ -23,9 +11,13 @@
       ansible.builtin.shell: |
         cd ~ &&
         rm -rf ./devBean-0.0.1.jar &&
-        wget {{ SERVER_JAR_PATH }} &&
-        java -jar devBean-0.0.1.jar --spring.datasource.url=jdbc:postgresql://${{ DB_URL }}/${{ DB_INSTANCE_NAME }} --spring.datasource.username=${{ DB_USER }} --spring.datasource.password=${{ DB_PASSWORD }} & disown
-
+        wget {{ SERVER_JAR_PATH }}
+    
+    - name: Start Server
+      ansible.builtin.shell: |
+        kill -9 `lsof -t -i:8090` 2> /dev/null &&
+        java -jar ./devBean-0.0.1.jar
+        
     - name: Print message
       ansible.builtin.debug:
         msg: Hello world
