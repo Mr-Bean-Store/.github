@@ -10,7 +10,7 @@
     - name: Download Server Jar
       ansible.builtin.shell: |
         cd ~ &&
-        rm -rf ./devBean-0.0.1.jar &&
+        rm -rf ./devBean-0.0.1-fat-jar.jar &&
         wget {{ SERVER_JAR_PATH }}
     
     - name: Kill Previous Server Instance
@@ -19,9 +19,7 @@
 
     - name: Start Server
       ansible.builtin.shell: |
-        nohup java -jar ~/devBean-0.0.1.jar & disown
-      async: 10
-      poll: 0
+        nohup java -jar ~/devBean-0.0.1-fat-jar.jar --spring.datasource.url=jdbc:postgresql://${{ DB_URL }}/${{ DB_INSTANCE_NAME }} --spring.datasource.username=${{ DB_USER }} --spring.datasource.password=${{ DB_PASSWORD }} & disown
 
     - name: Completed
       ansible.builtin.debug:
