@@ -29,7 +29,7 @@ public class OrderItemController {
     private final OrderItemRepository repository;
     private final OrderItemModelAssembler assembler;
 
-    OrderItemController(OrderItemRepository repository, OrderItemModelAssembler assembler) {
+    public OrderItemController(OrderItemRepository repository, OrderItemModelAssembler assembler) {
         this.repository = repository;
         this.assembler = assembler;
     }

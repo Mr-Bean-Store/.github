@@ -30,7 +30,7 @@ public class OrderController {
     private final OrderRepository repository;
     private final OrderModelAssembler assembler;
 
-    OrderController(OrderRepository repository, OrderModelAssembler assembler) {
+    public OrderController(OrderRepository repository, OrderModelAssembler assembler) {
         this.repository = repository;
         this.assembler = assembler;
     }

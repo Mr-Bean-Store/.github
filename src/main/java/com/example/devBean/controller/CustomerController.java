@@ -42,7 +42,7 @@ public class CustomerController {
     private final CustomerModelAssembler assembler;
 
     
-    CustomerController(CustomerRepository repository, CustomerModelAssembler assembler) {
+    public CustomerController(CustomerRepository repository, CustomerModelAssembler assembler) {
         this.repository = repository;
         this.assembler = assembler;
     }

@@ -29,7 +29,7 @@ public class AddressController {
     private final AddressRepository repository;
     private final AddressModelAssembler assembler;
 
-    AddressController(AddressRepository repository, AddressModelAssembler assembler) {
+    public AddressController(AddressRepository repository, AddressModelAssembler assembler) {
         this.repository = repository;
         this.assembler = assembler;
     }

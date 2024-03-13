@@ -27,7 +27,7 @@ public class PriceController {
     private final PriceRepository repository;
     private final PriceModelAssembler assembler;
 
-    PriceController(PriceRepository repository, PriceModelAssembler assembler) {
+    public PriceController(PriceRepository repository, PriceModelAssembler assembler) {
         this.repository = repository;
         this.assembler = assembler;
     }
