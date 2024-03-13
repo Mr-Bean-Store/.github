@@ -107,8 +107,9 @@ jobs:
       - name: Build Server Artifacts
         working-directory: server
         run: |
-          ls -al
-          sudo ./mvnw -B package --file pom.xml
+          ls -al &&
+          sudo apt install maven &&
+          sudo mvnw -B package --file pom.xml
       
       - name: Upload Release Asset
         id: upload-release-asset 
