@@ -96,6 +96,7 @@ jobs:
         run: |
           tag=$(git tag)
           RELEASE_TAG=$(if [[ $(echo $tag | wc -l) -eq 0 ]]; then echo "v1"; else echo "v$(($(echo $tag| sed s/v//)+1))"; fi)
+          echo $RELEASE_TAG
           echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_ENV
 
       - name: Create Release
@@ -108,8 +109,8 @@ jobs:
         working-directory: server
         run: |
           ls -al &&
-          sudo apt install maven &&
-          sudo mvnw -B package --file pom.xml
+          chmod +x mvnw &&
+          mvnw -B package --file pom.xml
       
       - name: Upload Release Asset
         id: upload-release-asset 
