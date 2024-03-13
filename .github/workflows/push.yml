@@ -137,7 +137,6 @@ jobs:
             [defaults] 
             timeout = 30 
           inventory: |
-            [all]
             ${{ env.EC2_IP }}
           requirements: ./infrastructure/roles/requirements.yml
           options: |
