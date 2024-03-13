@@ -1,18 +1,28 @@
-- name: My first play
+- name: Set Up Server
   hosts: all
   tasks:
+    - name: Link Python3
+      ansible.builtin.shell: |
+        rm /usr/bin/python 2> /dev/null && 
+        ln -s /usr/bin/python3.9 /usr/bin/python
+      become: true
+
     - name: Install Git
-      ansible.builtin.yun:
+      ansible.builtin.dnf:
         name: git
         state: latest
+      become: true
 
     - name: Install Java
-      ansible.builtin.yun:
-        name: java-21-openjdk
+      ansible.builtin.dnf:
+        name:  java-21-amazon-corretto
+        state: latest
+      become: true
 
     - name: Download Repo
       ansible.builtin.shell: |
         cd ~ &&
+        rm -rf ./MrBeanStore 2> /dev/null &&
         git clone git@github.com:Mr-Bean-Store/MrBeanStore.git
     
     - name: Print message

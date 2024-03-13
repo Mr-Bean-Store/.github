@@ -95,6 +95,6 @@ jobs:
           inventory: |
             [all]
             ${{ env.EC2_IP }}
-          requirements: ./infrastructure/requirements.yml
+          requirements: ./infrastructure/roles/requirements.yml
           options: |
             -u ec2-user
