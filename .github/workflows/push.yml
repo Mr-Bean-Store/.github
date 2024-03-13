@@ -129,17 +129,20 @@ jobs:
           asset_name: devBean-0.0.1.jar
           asset_content_type: application/jar
 
-      - name: Deploy Server
-        uses: dawidd6/action-ansible-playbook@v2
-        with:
-          playbook: ./infrastructure/ec2_playbook.yml
-          key: ${{ secrets.ANSIBLE_KEY }}
-          configuration: |
-            [defaults] 
-            timeout = 30 
-          inventory: |
-            ${{ env.EC2_IP }}
-          requirements: ./infrastructure/roles/requirements.yml
-          options: |
-            -u ec2-user
-            --extra-vars "SERVER_JAR_PATH=${{ steps.release_artifact.outputs.artifact-url }}"
+      - name: Log JAR PATH
+        run: echo "path=${{ steps.release_artifact.outputs.artifact-url }}"
+
+      # - name: Deploy Server
+      #   uses: dawidd6/action-ansible-playbook@v2
+      #   with:
+      #     playbook: ./infrastructure/ec2_playbook.yml
+      #     key: ${{ secrets.ANSIBLE_KEY }}
+      #     configuration: |
+      #       [defaults] 
+      #       timeout = 30 
+      #     inventory: |
+      #       ${{ env.EC2_IP }}
+      #     requirements: ./infrastructure/roles/requirements.yml
+      #     options: |
+      #       -u ec2-user
+      #       --extra-vars SERVER_JAR_PATH=${{ steps.release_artifact.outputs.artifact-url }}
