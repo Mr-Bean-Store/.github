@@ -27,7 +27,7 @@ public class Order {
     
     @ManyToOne(cascade = CascadeType.ALL) // cascade all will save the data from the address object in the Address table in db
     @JoinColumn(name = "customer_id") 
-    private Customer cust_order; // foreign key
+    private Customer customer; // foreign key
 
     @ManyToOne(cascade = CascadeType.ALL) // cascade all will save the data from the address object in the Address table in db
     @JoinColumn(name = "delivery_address_id") 
@@ -52,35 +52,5 @@ public class Order {
     public Order(String orderDate, String arrivalDate) {
         this.orderDate = orderDate;
         this.arrivalDate = arrivalDate;
-    }
-
-    public String getOrderDate() {
-        return orderDate;
-    }
-
-    public void setOrderDate(String orderDate) {
-        this.orderDate = orderDate;
-    }
-
-    public String getArrivalDate() {
-        return this.arrivalDate;
-    }
-
-    public void setArrivalDate(String arrivalDate) {
-        this.arrivalDate = arrivalDate;
-    }
-    
-    public Customer getCustomer() {
-        return cust_order;
-    }
-
-    public void setCustomer(Customer cust_order) {
-        this.cust_order = cust_order;
-    }
-
-    public List<OrderItem> getOrderItems() { return orderItems; }
-
-    public void setOrders(List<OrderItem> orderItems) {
-        this.orderItems = orderItems;
     }
 }

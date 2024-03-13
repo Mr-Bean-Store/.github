@@ -27,8 +27,12 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn -B package --file pom.xml
-    - name: Execute Jar File
-      run: sudo kill -9 `sudo lsof -t -i:8090` & sudo java -jar /home/ubuntu/actions-runner/_work/MrBeanStore/MrBeanStore/target/devBean-0.0.1.jar &
-
+    - name: Connet to Database and Execute Jar File
+      run: |
+        export SPRING_DATASOURCE_URL=jdbc:postgresql://${{ env.DB_URL }}/${{ secrets.DB_INSTANCE_NAME }}
+        export SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USER }}
+        export SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }}
+        sudo kill -9 `sudo lsof -t -i:8090`
+        sudo java -jar /home/ubuntu/actions-runner/_work/MrBeanStore/MrBeanStore/target/devBean-0.0.1.jar &
 
     

@@ -31,7 +31,7 @@ public class Customer {
     @Column(name = "email")
     private String email;
     
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "cust_order", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "customer", cascade = CascadeType.ALL)
     private List<Order> orders; 
 
     Customer() {}

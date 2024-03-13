@@ -29,20 +29,4 @@ public class Address {
         this.longitude = longitude;
     }
 
-    public String getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(String latitude) {
-        this.latitude = latitude;
-    }
-
-    public String getLongtude() {
-        return longitude;
-    }
-
-    public void setLongtude(String longitude) {
-        this.longitude = longitude;
-    }
-
 }

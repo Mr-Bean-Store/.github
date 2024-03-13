@@ -25,7 +25,7 @@ public class LoadDatabase {
     CommandLineRunner initDatabase(CustomerRepository customerRepo, OrderRepository orderRepo, AddressRepository addressRepo, OrderItemRepository orderItemRepo, ProductRepository productRepo) {
         return args -> {
             log.info("Preloading " + customerRepo.save(new Customer("Bilbo", "Baggins", "biblo.baggins@gmail.com")));
-            log.info("Preloading " + customerRepo.save(new Customer("Mithrindir", "Gandalf","mithrindir.gandalf@gmail.com")));
+            /*log.info("Preloading " + customerRepo.save(new Customer("Mithrindir", "Gandalf","mithrindir.gandalf@gmail.com")));
             
             log.info("Preloading " + addressRepo.save(new Address(" -26.144836", "28.042178")));
             
