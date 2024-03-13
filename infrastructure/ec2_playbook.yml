@@ -20,8 +20,9 @@
     - name: Start Server
       ansible.builtin.shell: |
         nohup java -jar ~/devBean-0.0.1.jar --spring.datasource.url=jdbc:postgresql://${{ DB_URL }}/${{ DB_INSTANCE_NAME }} --spring.datasource.username=${{ DB_USER }} --spring.datasource.password=${{ DB_PASSWORD }} &
-      become: true
+      async: 10
+      poll: 0
 
-    - name: Print message
+    - name: Completed
       ansible.builtin.debug:
-        msg: Hello world
+        msg: Completed
