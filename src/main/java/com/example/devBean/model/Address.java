@@ -20,11 +20,11 @@ public class Address {
      
     @Id 
     @GeneratedValue
-    @Column(name = "id")
+    @Column(name = "id", insertable = false, updatable = false)
     private Long addressId;
-    @Column(name = "latitude")
+    @Column(name = "latitude", insertable = false, updatable = false)
     private String latitude;
-    @Column(name = "latitude")
+    @Column(name = "latitude", insertable = false, updatable = false)
     private String longitude;
 
     Address() {}
