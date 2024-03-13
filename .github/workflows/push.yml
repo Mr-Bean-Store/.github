@@ -143,8 +143,8 @@ jobs:
           options: |
             -u ec2-user
             --extra-vars\ 
-            SERVER_JAR_PATH=https://github.com/Mr-Bean-Store/MrBeanStore/releases/tag/${{ steps.tag.outputs.new_tag }}/devBean-0.0.1.jar\
-            DB_URL=${{ env.DB_URL }}\
-            DB_INSTANCE_NAME=${{ secrets.DB_INSTANCE_NAME }}\
-            DB_USER=${{ secrets.DB_USER }}\
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }}\
+            SERVER_JAR_PATH=https://github.com/Mr-Bean-Store/MrBeanStore/releases/tag/${{ steps.tag.outputs.new_tag }}/devBean-0.0.1.jar
+            DB_URL=${{ env.DB_URL }}
+            DB_INSTANCE_NAME=${{ secrets.DB_INSTANCE_NAME }}
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
