@@ -18,7 +18,10 @@ import lombok.Data;
 @Table(name = "addresses")
 public class Address {
      
-    private @Id @GeneratedValue Long addressId;
+    @Id 
+    @GeneratedValue
+    @Column(name = "id")
+    private Long addressId;
     @Column(name = "latitude")
     private String latitude;
     @Column(name = "latitude")
