@@ -10,8 +10,10 @@
     ansible.builtin.yun:
       name: java-21-openjdk
 
-  - name: Execute shell command
-    ansible.builtin.shell: git clone git@github.com:Mr-Bean-Store/MrBeanStore.git
+  - name: Download Repo
+    ansible.builtin.shell: |
+      cd ~ &&
+      git clone git@github.com:Mr-Bean-Store/MrBeanStore.git
   
   - name: Print message
     ansible.builtin.debug:
