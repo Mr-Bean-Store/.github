@@ -76,3 +76,9 @@ jobs:
           locations:  filesystem:./db/migrations
         env:
           FLYWAY_VALIDATE_MIGRATION_NAMING: true
+
+      - name: Test Server
+        run: echo "#TODO"
+
+      - name: Test CLI Frontend
+        run: echo "#TODO"

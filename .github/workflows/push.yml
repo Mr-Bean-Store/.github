@@ -2,7 +2,6 @@ name: Run Live
 on:
   push:
     branches:
-      - feature/pulumi_*
       - main
       - develop
 concurrency:
@@ -83,3 +82,8 @@ jobs:
           locations:  filesystem:./db/migrations
         env:
           FLYWAY_VALIDATE_MIGRATION_NAMING: true
+
+      - name: Deploy Server
+        uses: dawidd6/action-ansible-playbook@v2
+        with:
+          playbook: ./infrastructure/ec2_playbook.yml
