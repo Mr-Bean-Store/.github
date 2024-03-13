@@ -92,13 +92,18 @@ jobs:
         run: |
           zip --junk-paths my-artifact README.md
 
+      - name: Create Release Tag
+        run: |
+          RELEASE_TAG=$(if [[ $(echo $tag | wc -l) -eq 0 ]]; then echo "v1"; else echo "v$(($(echo $tag| sed s/v//)+1))"; fi)
+          echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_ENV
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
+          tag_name: ${{ env.RELEASE_TAG }}
           release_name: Release ${{ github.ref }}
           body: |
             latest release
