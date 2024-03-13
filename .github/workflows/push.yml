@@ -24,12 +24,12 @@ jobs:
       - name: Checkout Branch
         uses: actions/checkout@v4
       
-      # - name: Setup Python
-      #   uses: actions/setup-python@v3
-      #   with:
-      #     python-version: "3.10"
-      #   env:
-      #     AGENT_TOOLSDIRECTORY: /opt/hostedtoolcache
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+        env:
+          AGENT_TOOLSDIRECTORY: /opt/hostedtoolcache
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
@@ -38,24 +38,24 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE }}
           role-session-name: pulumi-github-oidc
       
-      # - name: Setup Pulumi Packages
-      #   run: pip install -r requirements.txt
-      #   working-directory: infrastructure        
+      - name: Setup Pulumi Packages
+        run: pip install -r requirements.txt
+        working-directory: infrastructure        
       
-      # - name: Run Pulumi Up
-      #   uses: pulumi/actions@v5.1.1
-      #   with:
-      #     command: up
-      #     stack-name: ${{ secrets.PULUMI_STACK }}
-      #     work-dir: infrastructure
-      #     config-map: |
-      #       "{
-      #         db_user: {value: ${{ secrets.DB_USER }}, secret: true}, 
-      #         db_password: {value: ${{ secrets.DB_PASSWORD }}, secret: true} 
-      #         ssh_key_name: {value: ${{ secrets.SSH_KEY_NAME}}, secret: true}
-      #       }"
-      #   env:
-      #     PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+      - name: Run Pulumi Up
+        uses: pulumi/actions@v5.1.1
+        with:
+          command: up
+          stack-name: ${{ secrets.PULUMI_STACK }}
+          work-dir: infrastructure
+          config-map: |
+            "{
+              db_user: {value: ${{ secrets.DB_USER }}, secret: true}, 
+              db_password: {value: ${{ secrets.DB_PASSWORD }}, secret: true} 
+              ssh_key_name: {value: ${{ secrets.SSH_KEY_NAME}}, secret: true}
+            }"
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
       
       - name: Getting RDS Endpoint and EC2 IP
         run: |
@@ -67,30 +67,30 @@ jobs:
           echo "DB_URL=$DB_URL" >> $GITHUB_ENV
           echo "EC2_IP=$EC2_IP" >> $GITHUB_ENV
 
-      # - name: Update Secrets File
-      #   working-directory: infrastructure
-      #   run: |
-      #     echo AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }} >> .secrets
-      #     echo AWS_REGION=${{ secrets.AWS_REGION }} >> .secrets
-      #     echo EC2_IP=$(aws ec2 describe-instances --query "Reservations[*].Instances[?KeyName=='mr-bean-store-rsa'].PublicIpAddress" --output text) >> .secrets
-      #     echo DB_USER=${{ secrets.DB_USER }} >> .secrets
-      #     echo DB_URL=${{ env.DB_URL }} >> .secrets
-      #     echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .secrets
-      #     echo DB_INSTANCE_NAME=${{ secrets.DB_INSTANCE_NAME }} >> .secrets
-      #     echo PULUMI_ACCESS_TOKEN=${{ secrets.PULUMI_ACCESS_TOKEN }} >> .secrets
-      #     echo PULUMI_STACK=${{ secrets.PULUMI_STACK }} >> .secrets
-      #     echo SSH_KEY_NAME=${{ secrets.SSH_KEY_NAME }} >> .secrets
-      #     aws s3 cp ./.secrets s3://${{ secrets.AWS_BUCKET_NAME }}
+      - name: Update Secrets File
+        working-directory: infrastructure
+        run: |
+          echo AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }} >> .secrets
+          echo AWS_REGION=${{ secrets.AWS_REGION }} >> .secrets
+          echo EC2_IP=$(aws ec2 describe-instances --query "Reservations[*].Instances[?KeyName=='mr-bean-store-rsa'].PublicIpAddress" --output text) >> .secrets
+          echo DB_USER=${{ secrets.DB_USER }} >> .secrets
+          echo DB_URL=${{ env.DB_URL }} >> .secrets
+          echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .secrets
+          echo DB_INSTANCE_NAME=${{ secrets.DB_INSTANCE_NAME }} >> .secrets
+          echo PULUMI_ACCESS_TOKEN=${{ secrets.PULUMI_ACCESS_TOKEN }} >> .secrets
+          echo PULUMI_STACK=${{ secrets.PULUMI_STACK }} >> .secrets
+          echo SSH_KEY_NAME=${{ secrets.SSH_KEY_NAME }} >> .secrets
+          aws s3 cp ./.secrets s3://${{ secrets.AWS_BUCKET_NAME }}
     
-      # - name: Run Live Flyway Migrations
-      #   uses: joshuaavalon/flyway-action@v3.0.0
-      #   with:
-      #     url: jdbc:postgresql://${{ env.DB_URL }}/${{ secrets.DB_INSTANCE_NAME }}
-      #     user: ${{ secrets.DB_USER }}
-      #     password: ${{ secrets.DB_PASSWORD }}
-      #     locations:  filesystem:./db/migrations
-      #   env:
-      #     FLYWAY_VALIDATE_MIGRATION_NAMING: true
+      - name: Run Live Flyway Migrations
+        uses: joshuaavalon/flyway-action@v3.0.0
+        with:
+          url: jdbc:postgresql://${{ env.DB_URL }}/${{ secrets.DB_INSTANCE_NAME }}
+          user: ${{ secrets.DB_USER }}
+          password: ${{ secrets.DB_PASSWORD }}
+          locations:  filesystem:./db/migrations
+        env:
+          FLYWAY_VALIDATE_MIGRATION_NAMING: true
 
       - name: Set up JDK 21
         uses: actions/setup-java@v3

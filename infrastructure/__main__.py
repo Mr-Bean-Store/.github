@@ -129,5 +129,5 @@ elastic_ip = ec2.Eip(label("elastic_ip"))
 
 # Setup Elastic IP association
 elastic_ip_assoc = ec2.EipAssociation(
-    "elastic_ip_assoc", instance_id=ec2_instance.id, allocation_id=elastic_ip.id
+    label("elastic_ip_assoc"), instance_id=ec2_instance.id, allocation_id=elastic_ip.id
 )
