@@ -102,7 +102,6 @@ jobs:
       - name: Build Server Artifacts
         working-directory: server
         run: |
-          ls -al &&
           chmod +x ./mvnw &&
           ./mvnw package
 
