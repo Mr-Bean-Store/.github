@@ -133,11 +133,11 @@ jobs:
         working-directory: infrastructure
         run: |
           echo "    - name: Download Server Jar
-          ansible.builtin.shell: |
-            cd ~ &&
-            rm -rf ./devBean-0.0.1.jar &&
-            wget https://github.com/Mr-Bean-Store/MrBeanStore/releases/tag/${{ steps.tag.outputs.new_tag }}/devBean-0.0.1.jar &&
-            java -jar devBean-0.0.1.jar --spring.datasource.url=jdbc:postgresql://${{ env.DB_URL }}/${{ secrets.DB_INSTANCE_NAME }} --spring.datasource.username=${{ secrets.DB_USER }} --spring.datasource.password=${{ secrets.DB_PASSWORD }} &" >> ec2_playbook.yml
+                      ansible.builtin.shell: |
+                        cd ~ &&
+                        rm -rf ./devBean-0.0.1.jar &&
+                        wget https://github.com/Mr-Bean-Store/MrBeanStore/releases/tag/${{ steps.tag.outputs.new_tag }}/devBean-0.0.1.jar &&
+                        java -jar devBean-0.0.1.jar --spring.datasource.url=jdbc:postgresql://${{ env.DB_URL }}/${{ secrets.DB_INSTANCE_NAME }} --spring.datasource.username=${{ secrets.DB_USER }} --spring.datasource.password=${{ secrets.DB_PASSWORD }} &" >> ec2_playbook.yml
       
       - name: Deploy Server
         uses: dawidd6/action-ansible-playbook@v2
