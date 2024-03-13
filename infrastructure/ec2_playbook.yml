@@ -15,9 +15,10 @@
     
     - name: Start Server
       ansible.builtin.shell: |
+        cd ~ &&
         kill -9 `lsof -t -i:8090` 2> /dev/null &&
         java -jar ./devBean-0.0.1.jar
-        
+
     - name: Print message
       ansible.builtin.debug:
         msg: Hello world
