@@ -86,6 +86,33 @@ jobs:
           locations:  filesystem:./db/migrations
         env:
           FLYWAY_VALIDATE_MIGRATION_NAMING: true
+      - name: Build Server Artifacts
+        run: |
+          zip --junk-paths my-artifact README.md
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            latest release
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./my-artifact.zip
+          asset_name: my-artifact.zip
+          asset_content_type: application/zip
 
       - name: Deploy Server
         uses: dawidd6/action-ansible-playbook@v2
@@ -101,3 +128,4 @@ jobs:
           requirements: ./infrastructure/roles/requirements.yml
           options: |
             -u ec2-user
+            --extra-vars "SERVER_JAR_PATH=${{ steps.create_release.outputs.upload_url }}"
