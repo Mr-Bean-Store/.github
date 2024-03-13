@@ -19,13 +19,3 @@
         state: latest
       become: true
 
-    - name: Download Server Jar
-      ansible.builtin.shell: |
-        cd ~ &&
-        rm -rf ./devBean-0.0.1.jar &&
-        wget {{ SERVER_JAR_PATH }} &&
-        java -jar devBean-0.0.1.jar
-
-    - name: Print message
-      ansible.builtin.debug:
-        msg: Hello world
