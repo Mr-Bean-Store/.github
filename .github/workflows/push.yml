@@ -110,7 +110,6 @@ jobs:
         id: tag
         run: |
           tag=$(git tag)
-          echo $tag
           tag=$(if [[ $(echo $tag | wc -l) -eq 0 ]]; then echo "v1"; else echo "v$(($(echo $tag| sed s/v//)+1))"; fi)
           echo $tag
           echo "RELEASE_TAG=$tag" >> $GITHUB_OUTPUT
