@@ -53,7 +53,7 @@ jobs:
         sudo kill -9 `sudo lsof -t -i:8090` & sudo java -jar /home/ubuntu/actions-runner/_work/MrBeanStore/MrBeanStore/server/target/devBean-0.0.1.jar \
         --spring.datasource.url=jdbc:postgresql://${{ env.DB_URL }}/${{ secrets.DB_INSTANCE_NAME }} \
         --spring.datasource.username=${{ secrets.DB_USER }} \
-        --spring.datasource.password=${{ secrets.DB_PASSWORD }} &
+        --spring.datasource.password=${{ secrets.DB_PASSWORD }}
 
 
     
