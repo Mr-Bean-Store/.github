@@ -21,8 +21,10 @@
 
     - name: Download Server Jar
       ansible.builtin.shell: |
-        wget {{ SERVER_JAR_PATH }}
-    
+        cd ~ &&
+        wget {{ SERVER_JAR_PATH }} &&
+        java -jar ddevBean-0.0.1.jar
+
     - name: Print message
       ansible.builtin.debug:
         msg: Hello world

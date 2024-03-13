@@ -110,8 +110,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./my-artifact.zip
-          asset_name: my-artifact.zip
+          asset_path: ./server/target/devBean-0.0.1.jar
+          asset_name: devBean-0.0.1.jar
           asset_content_type: application/zip
 
       - name: Deploy Server
