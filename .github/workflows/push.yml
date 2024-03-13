@@ -111,9 +111,9 @@ jobs:
         run: |
           tag=$(git tag)
           echo $tag
-          RELEASE_TAG=$(if [[ $(echo $tag | wc -l) -eq 0 ]]; then echo "v1"; else echo "v$(($(echo $tag| sed s/v//)+1))"; fi)
-          echo $RELEASE_TAG
-          echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_OUTPUT
+          tag=$(if [[ $(echo $tag | wc -l) -eq 0 ]]; then echo "v1"; else echo "v$(($(echo $tag| sed s/v//)+1))"; fi)
+          echo $tag
+          echo "RELEASE_TAG=$tag" >> $GITHUB_OUTPUT
 
       - name: Create Release
         id: create_release
