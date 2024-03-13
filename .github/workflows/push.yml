@@ -95,3 +95,5 @@ jobs:
           inventory: |
             [all]
             ${{ env.EC2_IP }}
+          options: |
+            -u ec2-user
