@@ -25,7 +25,7 @@ public class Order {
     @Column(name = "id") 
     private Long orderId;
     
-    @ManyToOne(cascade = CascadeType.ALL) // cascade all will save the data from the address object in the Address table in db
+    @ManyToOne(cascade = CascadeType.ALL) // cascade all will save the data from the customer object in the Customer table in db
     @JoinColumn(name = "customer_id") 
     private Customer customer; // foreign key
 
@@ -41,11 +41,6 @@ public class Order {
     
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;
-
-    //private Double totalPrice; // totalPrice is necessary for 
-    //private Status status; // is status necessary? Should be done in the cli or the backend?
-
-    // private Address addr; // this is unnecessary since the customer object already contains an Address object
 
     Order() {}
 

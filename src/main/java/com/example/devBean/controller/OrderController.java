@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.devBean.assembler.OrderModelAssembler;
 import com.example.devBean.exception.OrderNotFoundException;
-import com.example.devBean.model.Customer;
 import com.example.devBean.model.Order;
 import com.example.devBean.repository.OrderRepository;
 
@@ -36,7 +35,6 @@ public class OrderController {
         this.assembler = assembler;
     }
 
-    // get all customers in system
     @GetMapping("/orders")
     public CollectionModel<EntityModel<Order>> allOrders() {
 
@@ -48,7 +46,7 @@ public class OrderController {
     }
 
     @PostMapping("/order")
-    ResponseEntity<?> newCustomer(@RequestBody Order newOrder) throws URISyntaxException {
+    ResponseEntity<?> newOrder(@RequestBody Order newOrder) throws URISyntaxException {
         EntityModel<Order> entityModel = assembler.toModel(repository.save(newOrder));
         return ResponseEntity // ResponseEntity is necessary because we want a more detailed HTTP response code than 200 OK
             .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) // URI -> uniform resource identifier | URL -> uniform resource locator
@@ -64,7 +62,7 @@ public class OrderController {
         return assembler.toModel(order);
     }
 
-    @PutMapping("/orders/{id}") // replaces existing customer with a new customer
+    @PutMapping("/orders/{id}") 
     public ResponseEntity<?> replaceOrder(@RequestBody Order newOrder, @PathVariable Long id) throws URISyntaxException {
 
         Order updatedOrder = repository.findById(id)

@@ -60,7 +60,7 @@ public class PriceController {
     }
 
     @PutMapping("/prices/{id}") // replaces existing customer with a new customer
-    public ResponseEntity<?> replaceCustomer(@RequestBody Price newPrice, @PathVariable Long id) throws URISyntaxException {
+    public ResponseEntity<?> replacePrice(@RequestBody Price newPrice, @PathVariable Long id) throws URISyntaxException {
 
         Price updatedPrice = repository.findById(id)
             .map(price -> {
