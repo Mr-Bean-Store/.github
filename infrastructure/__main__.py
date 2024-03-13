@@ -64,7 +64,7 @@ rds_subnet_group = rds.SubnetGroup(
 ec2_security_group = ec2.SecurityGroup(
     label("ec2_security_group"),
     vpc_id=vpc.id,
-    ingress=ingress(ports=[80, 22, 443]),
+    ingress=ingress(ports=[80, 22, 443, 8090]),
     egress=egress,
 )
 
