@@ -4,10 +4,9 @@ on:
     branches:
       - main
       - develop
-      - feature/pulumi_*
 concurrency:
   group: ${{ github.workflow }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 permissions:
   id-token: write
@@ -102,9 +101,8 @@ jobs:
       - name: Build Server Artifacts
         working-directory: server
         run: |
-          ls -al &&
           chmod +x ./mvnw &&
-          ./mvnw -B package --file pom.xml
+          ./mvnw package
 
       - name: Create Release Tag
         id: tag
@@ -125,8 +123,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./server/target/devBean-0.0.1.jar
-          asset_name: devBean-0.0.1.jar
+          asset_path: ./server/target/devBean-0.0.1-fat-jar.jar
+          asset_name: devBean-0.0.1-fat-jar.jar
           asset_content_type: application/jar
       
       - name: Deploy Server
