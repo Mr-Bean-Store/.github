@@ -121,7 +121,7 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./server/target/devBean-0.0.1.jar
           asset_name: devBean-0.0.1.jar
-          asset_content_type: application/zip
+          asset_content_type: application/jar
 
       - name: Deploy Server
         uses: dawidd6/action-ansible-playbook@v2
