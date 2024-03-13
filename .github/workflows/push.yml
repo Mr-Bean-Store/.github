@@ -92,6 +92,13 @@ jobs:
       #   env:
       #     FLYWAY_VALIDATE_MIGRATION_NAMING: true
 
+      - name: Build Server Artifacts
+        working-directory: server
+        run: |
+          ls -al &&
+          chmod +x ./mvnw &&
+          ./mvnw -B package --file pom.xml
+
       - name: Create Release Tag
         run: |
           tag=$(git tag)
@@ -104,13 +111,6 @@ jobs:
         uses: avakar/tag-and-release@v1
         with:
           tag_name: ${{ env.RELEASE_TAG }}
-      
-      - name: Build Server Artifacts
-        working-directory: server
-        run: |
-          ls -al &&
-          chmod +x mvnw &&
-          mvnw -B package --file pom.xml
       
       - name: Upload Release Asset
         id: upload-release-asset 
