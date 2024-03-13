@@ -92,6 +92,7 @@ jobs:
       - name: Create Release Tag
         run: |
           RELEASE_TAG=$(if [[ $(echo $tag | wc -l) -eq 0 ]]; then echo "v1"; else echo "v$(($(echo $tag| sed s/v//)+1))"; fi)
+          git tag $(echo $RELEASE_TAG)
           echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_ENV
 
       - name: Create Release
