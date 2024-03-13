@@ -102,7 +102,7 @@ machine_image = ec2.get_ami(
     filters=[
         ec2.GetAmiFilterArgs(
             name="name",
-            values=["amzn-ami-hvm-*-x86_64-ebs"],
+            values=["al2023-ami-2023.3.20240219.0-kernel-6.1-x86_64"],
         ),
     ],
 )

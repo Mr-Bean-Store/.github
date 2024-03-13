@@ -1,20 +1,20 @@
 - name: My first play
   hosts: all
   tasks:
-  - name: Install Git
-    ansible.builtin.yun:
-      name: git
-      state: latest
+    - name: Install Git
+      ansible.builtin.yun:
+        name: git
+        state: latest
 
-  - name: Install Java
-    ansible.builtin.yun:
-      name: java-21-openjdk
+    - name: Install Java
+      ansible.builtin.yun:
+        name: java-21-openjdk
 
-  - name: Download Repo
-    ansible.builtin.shell: |
-      cd ~ &&
-      git clone git@github.com:Mr-Bean-Store/MrBeanStore.git
-  
-  - name: Print message
-    ansible.builtin.debug:
-      msg: Hello world
+    - name: Download Repo
+      ansible.builtin.shell: |
+        cd ~ &&
+        git clone git@github.com:Mr-Bean-Store/MrBeanStore.git
+    
+    - name: Print message
+      ansible.builtin.debug:
+        msg: Hello world
