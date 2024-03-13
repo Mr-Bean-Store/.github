@@ -136,7 +136,7 @@ jobs:
           key: ${{ secrets.ANSIBLE_KEY }}
           configuration: |
             [defaults] 
-            timeout = 30 
+            timeout = 90 
           inventory: |
             ${{ env.EC2_IP }}
           requirements: ./infrastructure/roles/requirements.yml
