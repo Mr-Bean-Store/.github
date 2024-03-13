@@ -2,11 +2,13 @@ name: Run Tests
 on:
   pull_request:
     branches:
-      - feature/pulumi_*
       - main
       - develop
     types: [ready_for_review]
-
+  push:
+    branches:
+      - feature*
+  
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: true
@@ -52,7 +54,7 @@ jobs:
         run: pip install -r requirements.txt
         working-directory: infrastructure
       
-      - name: Run Pulumi Preview
+      - name: Test Pulumi
         uses: pulumi/actions@v5.1.1
         with:
           command: preview
