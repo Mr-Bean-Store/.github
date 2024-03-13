@@ -11,7 +11,9 @@ concurrency:
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
+  actions: write
+
 jobs:
   Run-Live:
     runs-on: ubuntu-latest
