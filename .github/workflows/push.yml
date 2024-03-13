@@ -13,6 +13,7 @@ permissions:
   id-token: write
   contents: write
   actions: write
+  pull-requests: read
 
 jobs:
   Run-Live:
@@ -97,16 +98,12 @@ jobs:
 
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: rymndhng/release-on-push-action@master
+        with:
+          bump_version_scheme: minor
+          tag_prefix: v
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ env.RELEASE_TAG }}
-          release_name: "Release ${{ github.ref }} ${{ env.RELEASE_TAG }}"
-          body: |
-            latest release
-          draft: false
-          prerelease: false
       
       - name: Build Server Artifacts
         working-directory: server
