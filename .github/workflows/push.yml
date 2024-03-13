@@ -110,7 +110,7 @@ jobs:
       - name: Build Server Artifacts
         working-directory: server
         run: |
-          mvnw -B package --file pom.xml
+          ./mvnw -B package --file pom.xml
       
       - name: Upload Release Asset
         id: upload-release-asset 
