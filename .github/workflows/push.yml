@@ -107,18 +107,19 @@ jobs:
           ./mvnw -B package --file pom.xml
 
       - name: Create Release Tag
+        id: tag
         run: |
           tag=$(git tag)
           echo $tag
           RELEASE_TAG=$(if [[ $(echo $tag | wc -l) -eq 0 ]]; then echo "v1"; else echo "v$(($(echo $tag| sed s/v//)+1))"; fi)
           echo $RELEASE_TAG
-          echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_ENV
+          echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_OUTPUT
 
       - name: Create Release
         id: create_release
         uses: avakar/tag-and-release@v1
         with:
-          tag_name: ${{ env.RELEASE_TAG }}
+          tag_name: ${{ steps.tag.RELEASE_TAG }}
       
       - name: Upload Release Asset
         id: upload-release-asset 
