@@ -111,6 +111,7 @@ jobs:
       - name: Build Server Artifacts
         working-directory: server
         run: |
+          ls -al
           sudo ./mvnw -B package --file pom.xml
       
       - name: Upload Release Asset
