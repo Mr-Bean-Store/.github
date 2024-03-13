@@ -30,15 +30,31 @@ target/
 
 
 ### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-keystore
+**/nbproject/private/
+**/nbbuild/
+**/dist/
+**/nbdist/
+**/.nb-gradle/
+**/build/
+**/keystore
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+**/hs_err_pid*
+**/replay_pid*
+
+# GitHub Actions local testing 
+.secret*
+
+# Pulumi Virtual Env
+infrastructure/venv/
+**/*.pyc
+
+# Pycharm
+**/.idea/
+
+# For security purposes
+**/.env
 ### VS Code ###
 .vscode/
