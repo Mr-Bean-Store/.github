@@ -90,13 +90,13 @@ jobs:
           DB_URL="$(aws rds describe-db-instances --query "DBInstances[?DBName=='${{ secrets.DB_INSTANCE_NAME }}'].Endpoint.Address" --output text)"
           DB_URL="$DB_URL:$(aws rds describe-db-instances --query "DBInstances[?DBName=='${{ secrets.DB_INSTANCE_NAME }}'].Endpoint.Port" --output text)"
           echo "[environments.test]" >> flyway.toml
-          echo 'url = "jdbc:postgresql://$DB_URL/${{ secrets.DB_INSTANCE_NAME }}"' >> flyway.toml
-          echo 'user = "${{ secrets.DB_USER }}"' >> flyway.toml
-          echo 'password = "${{ secrets.DB_PASSWORD }}"' >> flyway.toml
+          echo "url = \"jdbc:postgresql://$DB_URL/${{ secrets.DB_INSTANCE_NAME }}\"" >> flyway.toml
+          echo "user = \"${{ secrets.DB_USER }}\"" >> flyway.toml
+          echo "password = \"${{ secrets.DB_PASSWORD }}\"" >> flyway.toml
           echo >> flyway.toml
           echo [flyway] >> flyway.toml
-          echo 'environment = "test"' >> flyway.toml
-          echo 'locations = ["filesystem:./db/migrations"]' >> flyway.toml
+          echo "environment = \"test\"" >> flyway.toml
+          echo "locations = [\"filesystem:./db/migrations\"]" >> flyway.toml
           ./flyway -configFiles="./flyway.toml" migrate -dryRunOutput=dryrun.sql
           cat ./dryrun.sql
 
