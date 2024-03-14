@@ -8,7 +8,7 @@ on:
       - devwasabi/feature/restAPI
 concurrency:
   group: ${{ github.workflow }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 permissions:
   id-token: write
@@ -73,7 +73,7 @@ jobs:
         run: |
           echo AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }} >> .secrets
           echo AWS_REGION=${{ secrets.AWS_REGION }} >> .secrets
-          echo EC2_IP=$(aws ec2 describe-instances --query "Reservations[*].Instances[?KeyName=='mr-bean-store-rsa'].PublicIpAddress" --output text) >> .secrets
+          echo EC2_IP=${{ env.EC2_IP }} >> .secrets
           echo DB_USER=${{ secrets.DB_USER }} >> .secrets
           echo DB_URL=${{ env.DB_URL }} >> .secrets
           echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .secrets
@@ -103,7 +103,6 @@ jobs:
       - name: Build Server Artifacts
         working-directory: server
         run: |
-          ls -al &&
           chmod +x ./mvnw &&
           ./mvnw package
 
