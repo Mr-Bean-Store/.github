@@ -34,8 +34,8 @@ public class Product {
     @JoinColumn(name = "model_id") 
     private ProductModel model; // foreign key
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL)
-    private List<OrderItem> items;
+    //@OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL)
+    //private List<OrderItem> items;
 
     public Product() {}
 
