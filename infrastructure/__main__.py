@@ -64,7 +64,7 @@ rds_subnet_group = rds.SubnetGroup(
 ec2_security_group = ec2.SecurityGroup(
     label("ec2_security_group"),
     vpc_id=vpc.id,
-    ingress=ingress(ports=[80, 22, 443]),
+    ingress=ingress(ports=[80, 22, 443, 8090]),
     egress=egress,
 )
 
@@ -102,7 +102,7 @@ machine_image = ec2.get_ami(
     filters=[
         ec2.GetAmiFilterArgs(
             name="name",
-            values=["amzn-ami-hvm-*-x86_64-ebs"],
+            values=["al2023-ami-2023.3.20240219.0-kernel-6.1-x86_64"],
         ),
     ],
 )
@@ -129,5 +129,5 @@ elastic_ip = ec2.Eip(label("elastic_ip"))
 
 # Setup Elastic IP association
 elastic_ip_assoc = ec2.EipAssociation(
-    "elastic_ip_assoc", instance_id=ec2_instance.id, allocation_id=elastic_ip.id
+    label("elastic_ip_assoc"), instance_id=ec2_instance.id, allocation_id=elastic_ip.id
 )
