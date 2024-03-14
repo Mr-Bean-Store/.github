@@ -4,7 +4,6 @@ on:
     branches:
       - main
       - develop
-    types: [ready_for_review]
   push:
     branches:
       - feature*
@@ -80,7 +79,9 @@ jobs:
           FLYWAY_VALIDATE_MIGRATION_NAMING: true
 
       - name: Test Server
-        run: echo "#TODO"
+        working-directory: server
+        run: |
+          chmod +x ./mvnw && ./mvnw test
 
       - name: Test CLI Frontend
         run: echo "#TODO"
