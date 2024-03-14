@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.devBean.assembler.AddressModelAssembler;
 import com.example.devBean.exception.AddressNotFoundException;
 import com.example.devBean.model.Address;
+import com.example.devBean.model.Customer;
 import com.example.devBean.repository.AddressRepository;
 
 @RestController
@@ -42,6 +44,14 @@ public class AddressController {
 
         return CollectionModel.of(addresses,
             linkTo(methodOn(AddressController.class).allAddresses()).withSelfRel());
+    }
+
+    @PostMapping("/address")
+    ResponseEntity<?> newAddress(@RequestBody Address address) throws URISyntaxException {
+        EntityModel<Address> entityModel = assembler.toModel(repository.save(address));
+        return ResponseEntity // ResponseEntity is necessary because we want a more detailed HTTP response code than 200 OK
+            .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) // URI -> uniform resource identifier | URL -> uniform resource locator
+            .body(entityModel);
     }
 
     @GetMapping("/addresses/{id}")

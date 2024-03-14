@@ -3,6 +3,7 @@ package com.example.devBean.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -19,17 +20,17 @@ import lombok.Data;
 public class Address {
      
     @Id 
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long addressId;
     @Column(name = "latitude")
-    private String latitude;
+    private Double latitude;
     @Column(name = "longitude")
-    private String longitude;
+    private Double longitude;
 
     Address() {}
 
-    public Address(String latitude, String longitude) {
+    public Address(Double latitude, Double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }

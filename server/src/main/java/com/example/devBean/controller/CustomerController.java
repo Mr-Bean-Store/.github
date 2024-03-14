@@ -61,6 +61,7 @@ public class CustomerController {
     // create a new customer account, this function will save the customers details
     @PostMapping("/customer")
     ResponseEntity<?> newCustomer(@RequestBody Customer newCustomer) throws URISyntaxException {
+        System.out.println("idufidu");
         EntityModel<Customer> entityModel = assembler.toModel(repository.save(newCustomer));
         return ResponseEntity // ResponseEntity is necessary because we want a more detailed HTTP response code than 200 OK
             .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) // URI -> uniform resource identifier | URL -> uniform resource locator
