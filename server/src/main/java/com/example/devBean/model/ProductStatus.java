@@ -8,7 +8,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -25,9 +24,6 @@ public class ProductStatus {
     @Column(name = "description") 
     private String description;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "status", cascade = CascadeType.ALL)
-    private List<Product> products;
-
     public ProductStatus() {}
 
     public ProductStatus(String description) {
@@ -40,11 +36,5 @@ public class ProductStatus {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public List<Product> getProducts() { return products; }
-
-    public void setProducts(List<Product> products) {
-        this.products = products;
     }
 }
