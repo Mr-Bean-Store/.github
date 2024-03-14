@@ -66,8 +66,7 @@ public class PriceController {
             .map(price -> {
                 price.setDate(newPrice.getDate());
                 price.setAmount(newPrice.getAmount());
-                price.setModel(newPrice.getModel());
-                price.setItems(newPrice.getItems());
+                price.setModel(newPrice.getModel()); //price.setItems(newPrice.getItems());
                 return repository.save(price);
             })
             .orElseGet(() -> {

@@ -39,8 +39,8 @@ public class Order {
     @Column(name = "completed_date")
     private String arrivalDate; // date and time
     
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL)
-    private List<OrderItem> orderItems;
+    //@OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL)
+    //private List<OrderItem> orderItems;
 
     Order() {}
 

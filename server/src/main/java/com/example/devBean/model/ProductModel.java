@@ -25,27 +25,15 @@ public class ProductModel {
     @Column(name = "description") 
     private String description;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "model", cascade = CascadeType.ALL)
-    private List<Price> prices;
+    //@OneToMany(fetch = FetchType.LAZY, mappedBy = "model", cascade = CascadeType.ALL)
+    //private List<Price> prices;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "model", cascade = CascadeType.ALL)
-    private List<Product> products;
+    //@OneToMany(fetch = FetchType.LAZY, mappedBy = "model", cascade = CascadeType.ALL)
+    //private List<Product> products;
 
     public ProductModel() {}
 
     public ProductModel(String description) {
         this.description = description;
-    }
-
-    public List<Product> getProducts() { return products; }
-
-    public void setProducts(List<Product> products) {
-        this.products = products;
-    }
-
-    public List<Price> getPrices() { return prices; }
-
-    public void setPrices(List<Price> prices) {
-        this.prices = prices;
     }
 }
