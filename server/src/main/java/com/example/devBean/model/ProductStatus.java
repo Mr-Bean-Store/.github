@@ -17,7 +17,7 @@ import lombok.Data;
 public class ProductStatus {
     
     @Id 
-    @GeneratedValue 
+    //@GeneratedValue 
     @Column(name = "id")
     private Long status_id;
 

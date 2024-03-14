@@ -23,7 +23,7 @@ import com.example.devBean.model.Price;
 public class Product {
     
     @Id 
-    @GeneratedValue 
+    //@GeneratedValue 
     @Column(name = "id")
     private Long productId;
 
