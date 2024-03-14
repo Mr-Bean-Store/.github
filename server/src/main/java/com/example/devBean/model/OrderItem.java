@@ -17,7 +17,7 @@ import com.example.devBean.model.Product;
 public class OrderItem {
 
     @Id 
-    //@GeneratedValue 
+    @GeneratedValue 
     @Column(name = "id")
     private Long orderItemId;
 

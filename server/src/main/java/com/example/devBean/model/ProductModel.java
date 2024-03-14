@@ -18,7 +18,7 @@ import lombok.Data;
 public class ProductModel {
     
     @Id 
-    //@GeneratedValue 
+    @GeneratedValue 
     @Column(name = "id")
     private Long model_id;
 

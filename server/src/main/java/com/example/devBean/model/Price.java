@@ -20,7 +20,7 @@ import lombok.Data;
 public class Price {
     
     @Id 
-    //@GeneratedValue 
+    @GeneratedValue 
     @Column(name = "id")
     private Long priceId;
 

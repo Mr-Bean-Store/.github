@@ -19,7 +19,7 @@ import lombok.Data;
 public class Address {
      
     @Id 
-    //@GeneratedValue
+    @GeneratedValue
     @Column(name = "id")
     private Long addressId;
     @Column(name = "latitude")

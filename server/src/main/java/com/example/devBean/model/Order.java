@@ -21,7 +21,7 @@ import java.util.List;
 public class Order {
     
     @Id 
-    //@GeneratedValue
+    @GeneratedValue
     @Column(name = "id") 
     private Long orderId;
     

@@ -18,7 +18,7 @@ import lombok.Data;
 public class Customer {
     
     @Id 
-    //@GeneratedValue
+    @GeneratedValue
     @Column(name = "id")
     private Long customer_id;
 
