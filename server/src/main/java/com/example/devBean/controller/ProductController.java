@@ -73,7 +73,6 @@ public class ProductController {
             .map(product -> {
                 product.setSerialNumber(newProduct.getSerialNumber());
                 product.setModel(newProduct.getModel());
-                product.setStatus(newProduct.getStatus());
                 product.setItems(newProduct.getItems());
                 return repository.save(product);
             })
