@@ -1,0 +1,86 @@
+name: Run Tests
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+    types: [ready_for_review]
+  push:
+    branches:
+      - feature*
+  
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  Run-Tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: db
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout Branch
+        uses: actions/checkout@v2
+      
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+        env:
+          AGENT_TOOLSDIRECTORY: /opt/hostedtoolcache
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+          role-session-name: pulumi-github-oidc
+      
+      - name: Setup Pulumi Packages
+        run: pip install -r requirements.txt
+        working-directory: infrastructure
+      
+      - name: Test Pulumi
+        uses: pulumi/actions@v5.1.1
+        with:
+          command: preview
+          stack-name: ${{ secrets.PULUMI_STACK }}
+          work-dir: infrastructure
+          config-map: |
+            "{
+              db_user: {value: ${{ secrets.DB_USER }}, secret: true}, 
+              db_password: {value: ${{ secrets.DB_PASSWORD }}, secret: true} 
+              ssh_key_name: {value: ${{ secrets.SSH_KEY_NAME}}, secret: true}
+            }"
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+
+      - name: Test Flyway Migrations
+        uses: joshuaavalon/flyway-action@v3.0.0
+        with:
+          url: jdbc:postgresql://postgres:5432/db
+          user: user
+          password: password
+          locations:  filesystem:./db/migrations
+        env:
+          FLYWAY_VALIDATE_MIGRATION_NAMING: true
+
+      - name: Test Server
+        run: echo "#TODO"
+
+      - name: Test CLI Frontend
+        run: echo "#TODO"

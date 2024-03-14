@@ -1,0 +1,6 @@
+CREATE TABLE prices (
+  id INTEGER PRIMARY KEY,
+  model_id INTEGER NOT NULL,
+  amount DECIMAL NOT NULL,
+  created_date TIMESTAMP WITH TIME ZONE NOT NULL
+);

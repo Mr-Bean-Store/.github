@@ -1,0 +1,4 @@
+CREATE TABLE models (
+  id INTEGER PRIMARY KEY,
+  description VARCHAR(1000) NOT NULL UNIQUE
+);

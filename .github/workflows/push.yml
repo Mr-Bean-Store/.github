@@ -1,0 +1,140 @@
+name: Run Live
+on:
+  push:
+    branches:
+      - main
+      - develop
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+permissions:
+  id-token: write
+  contents: write
+  actions: write
+  pull-requests: read
+
+jobs:
+  Run-Live:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout Branch
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+        env:
+          AGENT_TOOLSDIRECTORY: /opt/hostedtoolcache
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+          role-session-name: pulumi-github-oidc
+      
+      - name: Setup Pulumi Packages
+        run: pip install -r requirements.txt
+        working-directory: infrastructure        
+      
+      - name: Run Pulumi Up
+        uses: pulumi/actions@v5.1.1
+        with:
+          command: up
+          stack-name: ${{ secrets.PULUMI_STACK }}
+          work-dir: infrastructure
+          config-map: |
+            "{
+              db_user: {value: ${{ secrets.DB_USER }}, secret: true}, 
+              db_password: {value: ${{ secrets.DB_PASSWORD }}, secret: true} 
+              ssh_key_name: {value: ${{ secrets.SSH_KEY_NAME}}, secret: true}
+            }"
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+      
+      - name: Getting RDS Endpoint and EC2 IP
+        run: |
+          DB_URL="$(aws rds describe-db-instances --query "DBInstances[?DBName=='${{ secrets.DB_INSTANCE_NAME }}'].Endpoint.Address" --output text)"
+          DB_URL="$DB_URL:$(aws rds describe-db-instances --query "DBInstances[?DBName=='${{ secrets.DB_INSTANCE_NAME }}'].Endpoint.Port" --output text)"
+          EC2_IP=$(aws ec2 describe-instances --query "Reservations[*].Instances[?KeyName=='${{ secrets.SSH_KEY_NAME }}'].PublicIpAddress" --output text)
+          echo "::add-mask::$DB_URL" 
+          echo "::add-mask::$EC2_IP"
+          echo "DB_URL=$DB_URL" >> $GITHUB_ENV
+          echo "EC2_IP=$EC2_IP" >> $GITHUB_ENV
+
+      - name: Update Secrets File
+        working-directory: infrastructure
+        run: |
+          echo AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }} >> .secrets
+          echo AWS_REGION=${{ secrets.AWS_REGION }} >> .secrets
+          echo EC2_IP=${{ env.EC2_IP }} >> .secrets
+          echo DB_USER=${{ secrets.DB_USER }} >> .secrets
+          echo DB_URL=${{ env.DB_URL }} >> .secrets
+          echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .secrets
+          echo DB_INSTANCE_NAME=${{ secrets.DB_INSTANCE_NAME }} >> .secrets
+          echo PULUMI_ACCESS_TOKEN=${{ secrets.PULUMI_ACCESS_TOKEN }} >> .secrets
+          echo PULUMI_STACK=${{ secrets.PULUMI_STACK }} >> .secrets
+          echo SSH_KEY_NAME=${{ secrets.SSH_KEY_NAME }} >> .secrets
+          aws s3 cp ./.secrets s3://${{ secrets.AWS_BUCKET_NAME }}
+    
+      - name: Run Live Flyway Migrations
+        uses: joshuaavalon/flyway-action@v3.0.0
+        with:
+          url: jdbc:postgresql://${{ env.DB_URL }}/${{ secrets.DB_INSTANCE_NAME }}
+          user: ${{ secrets.DB_USER }}
+          password: ${{ secrets.DB_PASSWORD }}
+          locations:  filesystem:./db/migrations
+        env:
+          FLYWAY_VALIDATE_MIGRATION_NAMING: true
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'corretto'
+          cache: maven
+
+      - name: Build Server Artifacts
+        working-directory: server
+        run: |
+          chmod +x ./mvnw &&
+          ./mvnw package
+
+      - name: Create Release Tag
+        id: tag
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag_prefix: v
+
+
+      - name: Create Release
+        id: create_release
+        uses: avakar/tag-and-release@v1
+        with:
+          tag_name: ${{ steps.tag.outputs.new_tag }}
+      
+      - name: Upload Release Artifact
+        id: release_artifact
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./server/target/devBean-0.0.1-fat-jar.jar
+          asset_name: devBean-0.0.1-fat-jar.jar
+          asset_content_type: application/jar
+      
+      - name: Deploy Server
+        uses: dawidd6/action-ansible-playbook@v2
+        with:
+          playbook: ./infrastructure/ec2_playbook.yml
+          key: ${{ secrets.ANSIBLE_KEY }}
+          inventory: |
+            ${{ env.EC2_IP }}
+          requirements: ./infrastructure/roles/requirements.yml
+          options: |
+            -u ec2-user
+            --extra-vars "SERVER_JAR_PATH=${{ steps.release_artifact.outputs.browser_download_url }} DB_URL=${{ env.DB_URL }} DB_INSTANCE_NAME=${{ secrets.DB_INSTANCE_NAME }} DB_USER=${{ secrets.DB_USER }} DB_PASSWORD=${{ secrets.DB_PASSWORD }}"
