@@ -20,7 +20,7 @@ import lombok.Data;
 public class Price {
     
     @Id 
-    @GeneratedValue 
+    //@GeneratedValue 
     @Column(name = "id")
     private Long priceId;
 
@@ -34,8 +34,8 @@ public class Price {
     @Column(name = "created_date")
     private String date;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "price", cascade = CascadeType.ALL)
-    private List<OrderItem> items;
+    //@OneToMany(fetch = FetchType.LAZY, mappedBy = "price", cascade = CascadeType.ALL)
+    //private List<OrderItem> items;
 
     public Price() {}
 

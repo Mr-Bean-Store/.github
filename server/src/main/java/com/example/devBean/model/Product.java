@@ -23,7 +23,7 @@ import com.example.devBean.model.Price;
 public class Product {
     
     @Id 
-    @GeneratedValue 
+    //@GeneratedValue 
     @Column(name = "id")
     private Long productId;
 
@@ -34,12 +34,8 @@ public class Product {
     @JoinColumn(name = "model_id") 
     private ProductModel model; // foreign key
 
-    @ManyToOne(cascade = CascadeType.ALL) // cascade all will save the data from the product status object in the product status table
-    @JoinColumn(name = "status_id") 
-    private ProductStatus status; // foreign key
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL)
-    private List<OrderItem> items;
+    //@OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL)
+    //private List<OrderItem> items;
 
     public Product() {}
 

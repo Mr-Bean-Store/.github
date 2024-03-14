@@ -18,7 +18,7 @@ import lombok.Data;
 public class Customer {
     
     @Id 
-    @GeneratedValue
+    //@GeneratedValue
     @Column(name = "id")
     private Long customer_id;
 
@@ -31,8 +31,8 @@ public class Customer {
     @Column(name = "email")
     private String email;
     
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "customer", cascade = CascadeType.ALL)
-    private List<Order> orders; 
+    //@OneToMany(fetch = FetchType.LAZY, mappedBy = "customer", cascade = CascadeType.ALL)
+    //private List<Order> orders; 
 
     Customer() {}
 
@@ -66,11 +66,5 @@ public class Customer {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public List<Order> getOrders() { return orders; }
-
-    public void setOrders(List<Order> orders) {
-        this.orders = orders;
     }
 }

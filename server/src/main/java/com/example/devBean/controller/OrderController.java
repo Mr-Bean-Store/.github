@@ -70,8 +70,7 @@ public class OrderController {
                 order.setCustomer(newOrder.getCustomer());
                 order.setArrivalDate(newOrder.getArrivalDate());
                 order.setOrderDate(newOrder.getOrderDate());
-                order.setDelivery(newOrder.getDelivery());
-                order.setOrderItems(newOrder.getOrderItems());
+                order.setDelivery(newOrder.getDelivery()); //order.setOrderItems(newOrder.getOrderItems());
                 return repository.save(order);
             })
             .orElseGet(() -> {

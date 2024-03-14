@@ -72,9 +72,7 @@ public class ProductController {
         Product updatedProduct = repository.findById(id)
             .map(product -> {
                 product.setSerialNumber(newProduct.getSerialNumber());
-                product.setModel(newProduct.getModel());
-                product.setStatus(newProduct.getStatus());
-                product.setItems(newProduct.getItems());
+                product.setModel(newProduct.getModel());//product.setItems(newProduct.getItems());
                 return repository.save(product);
             })
             .orElseGet(() -> {
