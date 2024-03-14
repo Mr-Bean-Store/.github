@@ -30,7 +30,7 @@ public class Order {
     private Customer customer; // foreign key
 
     @ManyToOne(cascade = CascadeType.ALL) // cascade all will save the data from the address object in the Address table in db
-    @JoinColumn(name = "delivery_address_id") 
+    @JoinColumn(name = "delivery_addess_id") 
     private Address delivery; // a separate table will be made for address, therefore a separate model class
 
     @Column(name = "created_date")
