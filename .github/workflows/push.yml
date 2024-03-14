@@ -4,6 +4,7 @@ on:
     branches:
       - main
       - develop
+      - feature/dont_deploy_dev
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: false
@@ -128,6 +129,7 @@ jobs:
           asset_content_type: application/jar
       
       - name: Deploy Server
+        if: ${{ contains(github.ref, 'main') }}
         uses: dawidd6/action-ansible-playbook@v2
         with:
           playbook: ./infrastructure/ec2_playbook.yml
