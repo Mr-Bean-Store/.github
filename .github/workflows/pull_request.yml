@@ -4,13 +4,12 @@ on:
     branches:
       - main
       - develop
-    types: [ready_for_review]
   push:
     branches:
-      - feature*
+      - feature/*
   
 concurrency:
-  group: ${{ github.workflow }}
+  group: ${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: true
 
 permissions:
@@ -78,9 +77,18 @@ jobs:
           locations:  filesystem:./db/migrations
         env:
           FLYWAY_VALIDATE_MIGRATION_NAMING: true
+      
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'corretto'
+          cache: maven
 
       - name: Test Server
-        run: echo "#TODO"
+        working-directory: server
+        run: |
+          chmod +x ./mvnw && ./mvnw test
 
       - name: Test CLI Frontend
         run: echo "#TODO"
