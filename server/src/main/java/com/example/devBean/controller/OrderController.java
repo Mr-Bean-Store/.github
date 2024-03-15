@@ -4,6 +4,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.net.URISyntaxException;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
@@ -20,17 +21,25 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.devBean.assembler.OrderModelAssembler;
+import com.example.devBean.exception.AddressNotFoundException;
+import com.example.devBean.exception.CustomerNotFoundException;
 import com.example.devBean.exception.OrderNotFoundException;
+import com.example.devBean.model.Address;
+import com.example.devBean.model.Customer;
 import com.example.devBean.model.Order;
 import com.example.devBean.model.OrderItem;
 import com.example.devBean.model.Price;
 import com.example.devBean.model.Product;
+import com.example.devBean.repository.AddressRepository;
+import com.example.devBean.repository.CustomerRepository;
 import com.example.devBean.repository.OrderRepository;
 import com.example.devBean.repository.ProductRepository;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 @RestController
@@ -39,11 +48,15 @@ public class OrderController {
     private final OrderRepository repository;
     private final OrderModelAssembler assembler;
     private final ProductRepository productRepository;
+    private final CustomerRepository customerRepository;
+    private final AddressRepository addressRepository;
 
-    public OrderController(OrderRepository repository, OrderModelAssembler assembler, ProductRepository productRepository) {
+    public OrderController(OrderRepository repository, OrderModelAssembler assembler, ProductRepository productRepository, CustomerRepository customerRepository, AddressRepository addressRepository) {
         this.repository = repository;
         this.assembler = assembler;
         this.productRepository = productRepository;
+        this.customerRepository = customerRepository;
+        this.addressRepository = addressRepository;
     }
 
     @GetMapping("/orders")
@@ -74,16 +87,25 @@ public class OrderController {
     }
 
     @PostMapping("/createOrderFromProducts")
-    ResponseEntity<?> newOrderFromProducts(@RequestBody List<Long> productIds) throws URISyntaxException {
+    ResponseEntity<?> newOrderFromProducts( @RequestParam Long customerId,
+                                            @RequestParam Long addressId,
+                                            @RequestBody List<Long> productIds) throws URISyntaxException {
+
         // Create a new order with orderDate and arrivalDate
         LocalDate currentDate = LocalDate.now();
-        Order newOrder = new Order(currentDate.toString(), currentDate.plusDays(10).toString());
-        // You can adjust the orderDate and arrivalDate logic based on your requirements
+        Timestamp orderDate = Timestamp.valueOf(currentDate.atStartOfDay());
+        Timestamp arrivalDate = Timestamp.valueOf(currentDate.plusDays(10).atStartOfDay());
+        System.out.println("===========================================");
+        System.out.println(currentDate.toString());
+        System.out.println("===========================================");
+        
+        Order newOrder = new Order(orderDate, arrivalDate);
+        Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new CustomerNotFoundException(customerId));
+        Address address =  addressRepository.findById(addressId).orElseThrow(() -> new AddressNotFoundException(addressId));
 
-        // Save the order to the repository
-        Order savedOrder = repository.save(newOrder);
+        newOrder.setCustomer(customer);
+        newOrder.setDelivery(address);
 
-        // Retrieve products from the database using the provided IDs
         List<Product> products = productRepository.findAllById(productIds);
 
         // Associate the products with the order (assuming OrderItem contains product details)
@@ -92,7 +114,7 @@ public class OrderController {
             // Set other details of the order item as needed
             orderItem.setProduct(product);
             // Associate the order item with the order
-            orderItem.setOrder(savedOrder);
+            orderItem.setOrder(newOrder);
             Random r = new Random();
             Double priceAmount = r.nextDouble(1000, 100000); // Generate a random price amount
             Price price = new Price(priceAmount, currentDate.toString());
@@ -100,7 +122,7 @@ public class OrderController {
         }
 
         // Save the updated order with associated products
-        Order updatedOrder = repository.save(savedOrder);
+        Order updatedOrder = repository.save(newOrder);
 
         // Return the response
         EntityModel<Order> entityModel = assembler.toModel(updatedOrder);

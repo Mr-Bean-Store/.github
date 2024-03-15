@@ -14,6 +14,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Entity
@@ -35,17 +36,17 @@ public class Order {
     private Address delivery; // a separate table will be made for address, therefore a separate model class
 
     @Column(name = "created_date")
-    private String orderDate; 
+    private Timestamp orderDate; 
 
     @Column(name = "completed_date")
-    private String arrivalDate; // date and time
+    private Timestamp arrivalDate; // date and time
     
     //@OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL)
     //private List<OrderItem> orderItems;
 
     Order() {}
 
-    public Order(String orderDate, String arrivalDate) {
+    public Order(Timestamp orderDate, Timestamp arrivalDate) {
         this.orderDate = orderDate;
         this.arrivalDate = arrivalDate;
     }
