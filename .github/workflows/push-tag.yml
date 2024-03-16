@@ -8,7 +8,7 @@ jobs:
     Package-Artifacts:
       strategy:
         matrix:
-          os: [ubuntu-latest, macos-lates, windows-latest]
+          os: [ubuntu-latest, macos-latest, windows-latest]
           include:
             - os: ubuntu-latest
               release-suffix: ubuntu
