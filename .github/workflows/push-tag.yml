@@ -2,7 +2,7 @@ name: Package Artifacts
 on: 
   push:
     tags:
-      v*
+      - "*"
   
 jobs:
     Package-Artifacts:
