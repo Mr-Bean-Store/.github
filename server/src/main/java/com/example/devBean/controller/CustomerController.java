@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
@@ -24,6 +26,8 @@ import com.example.devBean.repository.CustomerRepository;
 import com.example.devBean.assembler.CustomerModelAssembler;
 import com.example.devBean.exception.CustomerNotFoundException;
 import com.example.devBean.model.Customer;
+
+
 
 /**
  * We have routes for each operations (@GetMapping, @PostMapping, @PutMapping and @DeleteMapping, corresponding to HTTP GET, POST, PUT, and DELETE calls
@@ -56,18 +60,32 @@ public class CustomerController {
         List<EntityModel<Customer>> customers = repository.findAll().stream()
         .map(assembler::toModel).collect(Collectors.toList());
 
-        return CollectionModel.of(customers,
+        CollectionModel<EntityModel<Customer>> response = CollectionModel.of(customers,
             linkTo(methodOn(CustomerController.class).allCustomers()).withSelfRel());
+
+        return response;
     }
 
     // create a new customer account, this function will save the customers details
     @PostMapping("/customer")
     ResponseEntity<?> newCustomer(@RequestBody Customer newCustomer) throws URISyntaxException {
-        System.out.println("idufidu");
-        EntityModel<Customer> entityModel = assembler.toModel(repository.save(newCustomer));
-        return ResponseEntity // ResponseEntity is necessary because we want a more detailed HTTP response code than 200 OK
-            .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) // URI -> uniform resource identifier | URL -> uniform resource locator
-            .body(entityModel);
+        try {
+            EntityModel<Customer> entityModel = assembler.toModel((Customer)this.repository.save(newCustomer));
+            return ResponseEntity
+                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                .body(entityModel);
+        } catch (Exception ex) {
+            if (ex.getCause() instanceof ConstraintViolationException) {
+                ConstraintViolationException constraintEx = (ConstraintViolationException) ex.getCause();
+                String constraintName = constraintEx.getConstraintName();
+                if (constraintName != null && constraintName.startsWith("unique_constraint_name")) {
+                    return ResponseEntity
+                        .status(HttpStatus.CONFLICT)
+                        .body("Duplicate entry. Please provide unique data.");
+                }
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Data integrity violation occurred. Please check your data.");
+        }  
     }
 
     // get one customer of the specified id in the system
@@ -103,16 +121,9 @@ public class CustomerController {
             .body(entityModel);
     }
 
-    @GetMapping("/checkCustomersEmail")
-    public ResponseEntity<Boolean> checkCustomer(@PathVariable String email) {
-        List<Customer> customers = repository.findAll();
-        Boolean result = customers.stream().anyMatch(s -> s.getEmail().equals(email));
-        return ResponseEntity.status(HttpStatus.OK).body(result);
-    }
-
-    @DeleteMapping("/customers/{id}")
-    ResponseEntity<?> deleteCustomer(@PathVariable Long id) {
-        repository.deleteById(id);
-        return ResponseEntity.noContent().build();
-    }
+    @DeleteMapping({"/customers/{id}"})
+   ResponseEntity<?> deleteCustomer(@PathVariable Long id) {
+      this.repository.deleteById(id);
+      return ResponseEntity.noContent().build();
+   }
 }
