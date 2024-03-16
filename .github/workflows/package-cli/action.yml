@@ -8,8 +8,10 @@ on:
       os-suffix:
         required: true
         type: string
+  push
+  
 jobs:
     Package-Cli:
     steps:
       - name: Test Call
-        run: echo "Hello from ${{ inputs.os-suffix }}"
+        run: echo "Hello from ${{ os-suffix }}"
