@@ -58,3 +58,6 @@ infrastructure/venv/
 **/.env
 ### VS Code ###
 .vscode/
+
+# CLI logs
+cli/*.log
