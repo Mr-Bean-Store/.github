@@ -41,8 +41,7 @@ public class OrderItemController {
         List<EntityModel<OrderItem>> orderItems = repository.findAll().stream()
         .map(assembler::toModel).collect(Collectors.toList());
 
-        return CollectionModel.of(orderItems,
-            linkTo(methodOn(OrderController.class).allOrders()).withSelfRel());
+        return CollectionModel.of(orderItems);
     }
 
     @GetMapping("/orderItems/{id}")
@@ -52,33 +51,5 @@ public class OrderItemController {
             .orElseThrow(() -> new OrderItemNotFoundException(id));
 
         return assembler.toModel(orderItem);
-    }
-
-    @PutMapping("/orderItems/{id}") // replaces existing customer with a new customer
-    public ResponseEntity<?> replaceOrderItem(@RequestBody OrderItem newOrderItem, @PathVariable Long id) throws URISyntaxException {
-
-        OrderItem updatedOrderItem = repository.findById(id)
-            .map(orderItem -> {
-                orderItem.setOrder(newOrderItem.getOrder());
-                orderItem.setPrice(newOrderItem.getPrice());
-                orderItem.setProduct(newOrderItem.getProduct());
-                return repository.save(orderItem);
-            })
-            .orElseGet(() -> {
-                newOrderItem.setOrderItemId(id);;
-                return repository.save(newOrderItem);
-            });
-
-        EntityModel<OrderItem> entityModel = assembler.toModel(updatedOrderItem);
-
-        return ResponseEntity
-            .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
-            .body(entityModel);
-    }
-
-    @DeleteMapping("/orderItems/{id}")
-    ResponseEntity<?> deleteOrderItem(@PathVariable Long id) {
-        repository.deleteById(id);
-        return ResponseEntity.noContent().build();
     }
 }

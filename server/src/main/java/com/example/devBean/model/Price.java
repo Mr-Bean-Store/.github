@@ -1,5 +1,6 @@
 package com.example.devBean.model;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -33,14 +34,14 @@ public class Price {
     private Double amount;
 
     @Column(name = "created_date")
-    private String date;
+    private Timestamp date;
 
     //@OneToMany(fetch = FetchType.LAZY, mappedBy = "price", cascade = CascadeType.ALL)
     //private List<OrderItem> items;
 
     public Price() {}
 
-    public Price(Double amount, String date) {
+    public Price(Double amount, Timestamp date) {
         this.amount = amount;
         this.date = date;
     }
@@ -53,11 +54,11 @@ public class Price {
         this.amount = amount;
     }
 
-    public String getDate() {
+    public Timestamp getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(Timestamp date) {
         this.date = date;
     }
 }

@@ -16,12 +16,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.example.devBean.assembler.PriceModelAssembler;
 import com.example.devBean.exception.PriceNotFoundException;
 import com.example.devBean.model.Price;
 import com.example.devBean.repository.PriceRepository;
 
+@RestController
 public class PriceController {
     
     private final PriceRepository repository;
@@ -38,8 +40,7 @@ public class PriceController {
         List<EntityModel<Price>> prices = repository.findAll().stream()
         .map(assembler::toModel).collect(Collectors.toList());
 
-        return CollectionModel.of(prices,
-            linkTo(methodOn(PriceController.class).allPrices()).withSelfRel());
+        return CollectionModel.of(prices);
     }
 
     @PostMapping("/price")
@@ -59,14 +60,14 @@ public class PriceController {
         return assembler.toModel(price);
     }
 
-    @PutMapping("/prices/{id}") // replaces existing customer with a new customer
+    @PutMapping("/prices/{id}") 
     public ResponseEntity<?> replacePrice(@RequestBody Price newPrice, @PathVariable Long id) throws URISyntaxException {
 
         Price updatedPrice = repository.findById(id)
             .map(price -> {
                 price.setDate(newPrice.getDate());
                 price.setAmount(newPrice.getAmount());
-                price.setModel(newPrice.getModel()); //price.setItems(newPrice.getItems());
+                price.setModel(newPrice.getModel()); 
                 return repository.save(price);
             })
             .orElseGet(() -> {

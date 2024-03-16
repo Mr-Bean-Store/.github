@@ -79,9 +79,7 @@ public class AddressController {
 
         EntityModel<Address> entityModel = assembler.toModel(updatedAddress);
 
-        return ResponseEntity
-            .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
-            .body(entityModel);
+        return ResponseEntity.ok(entityModel);
     }
 
     @DeleteMapping("/addresses/{id}")

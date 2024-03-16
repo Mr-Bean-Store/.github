@@ -40,9 +40,6 @@ public class Order {
 
     @Column(name = "completed_date")
     private Timestamp arrivalDate; // date and time
-    
-    //@OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL)
-    //private List<OrderItem> orderItems;
 
     Order() {}
 

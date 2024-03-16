@@ -1,13 +1,11 @@
 package com.example.devBean.controller;
 
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
-//import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.hateoas.CollectionModel;
@@ -25,8 +22,6 @@ import org.springframework.hateoas.IanaLinkRelations;
 
 import com.example.devBean.repository.CustomerRepository;
 import com.example.devBean.assembler.CustomerModelAssembler;
-import com.example.devBean.exception.CustomerNotFoundAdvice;
-import com.example.devBean.exception.CustomerNotFoundException;
 import com.example.devBean.model.Customer;
 
 
@@ -58,12 +53,10 @@ public class CustomerController {
     // get all customers in system
     @GetMapping("/customers")
     public CollectionModel<EntityModel<Customer>> allCustomers() {
-
         List<EntityModel<Customer>> customers = repository.findAll().stream()
         .map(assembler::toModel).collect(Collectors.toList());
-
-        CollectionModel<EntityModel<Customer>> response = CollectionModel.of(customers,
-            linkTo(methodOn(CustomerController.class).allCustomers()).withSelfRel());
+        
+        CollectionModel<EntityModel<Customer>> response = CollectionModel.of(customers);
 
         return response;
     }
@@ -92,17 +85,18 @@ public class CustomerController {
 
     // get one customer of the specified id in the system
     @GetMapping("/customers/{id}")
-    public EntityModel<Customer> oneCustomer(@PathVariable Long id) {
-
-        Customer customer = repository.findById(id)
-            .orElseThrow(() -> new CustomerNotFoundException(id));
-
-        return assembler.toModel(customer);
+    public ResponseEntity<?> oneCustomer(@PathVariable Long id) {
+        Optional<Customer> customer = repository.findById(id);
+        if (customer.isPresent()) {
+            EntityModel<Customer> entityModel = assembler.toModel(customer.get());
+            return ResponseEntity.ok(entityModel);
+        }
+        String errorMessage = "Customer not found with id: " + id;
+        return ResponseEntity.status(HttpStatus.OK).body(errorMessage);
     }
 
     @PutMapping("/customers/{id}") // replaces existing customer with a new customer
     public ResponseEntity<?> replaceCustomer(@RequestBody Customer newCustomer, @PathVariable Long id) throws URISyntaxException {
-
         Customer updatedCustomer = repository.findById(id)
             .map(customer -> {
                 customer.setEmail(newCustomer.getEmail());
@@ -117,10 +111,7 @@ public class CustomerController {
             });
 
         EntityModel<Customer> entityModel = assembler.toModel(updatedCustomer);
-
-        return ResponseEntity
-            .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
-            .body(entityModel);
+        return ResponseEntity.ok(entityModel);
     }
 
     @GetMapping("/customer-by-email/{email}")
@@ -131,12 +122,12 @@ public class CustomerController {
             return ResponseEntity.ok(entityModel);
         }
         String errorMessage = "Customer not found with email: " + email;
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+        return ResponseEntity.status(HttpStatus.OK).body(errorMessage);
     }
 
     @DeleteMapping({"/customers/{id}"})
-   ResponseEntity<?> deleteCustomer(@PathVariable Long id) {
-      this.repository.deleteById(id);
-      return ResponseEntity.noContent().build();
-   }
+    ResponseEntity<?> deleteCustomer(@PathVariable Long id) {
+        this.repository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }

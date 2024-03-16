@@ -47,15 +47,6 @@ public class ProductController {
             linkTo(methodOn(ProductController.class).allProducts()).withSelfRel());
     }
 
-    // create a new Product account, this function will save the Products details
-    @PostMapping("/product")
-    ResponseEntity<?> newProduct(@RequestBody Product newProduct) throws URISyntaxException {
-        EntityModel<Product> entityModel = assembler.toModel(repository.save(newProduct));
-        return ResponseEntity // ResponseEntity is necessary because we want a more detailed HTTP response code than 200 OK
-            .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) // URI -> uniform resource identifier | URL -> uniform resource locator
-            .body(entityModel);
-    }
-
     // get one Product of the specified id in the system
     @GetMapping("/products/{id}")
     public EntityModel<Product> oneProduct(@PathVariable Long id) {
@@ -64,32 +55,5 @@ public class ProductController {
             .orElseThrow(() -> new ProductNotFoundException(id));
 
         return assembler.toModel(Product);
-    }
-
-    @PutMapping("/products/{id}") // replaces existing Product with a new Product
-    public ResponseEntity<?> replaceProduct(@RequestBody Product newProduct, @PathVariable Long id) throws URISyntaxException {
-
-        Product updatedProduct = repository.findById(id)
-            .map(product -> {
-                product.setSerialNumber(newProduct.getSerialNumber());
-                product.setModel(newProduct.getModel());//product.setItems(newProduct.getItems());
-                return repository.save(product);
-            })
-            .orElseGet(() -> {
-                newProduct.setProductId(id);
-                return repository.save(newProduct);
-            });
-
-        EntityModel<Product> entityModel = assembler.toModel(updatedProduct);
-
-        return ResponseEntity
-            .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
-            .body(entityModel);
-    }
-
-    @DeleteMapping("/products/{id}")
-    ResponseEntity<?> deleteProduct(@PathVariable Long id) {
-        repository.deleteById(id);
-        return ResponseEntity.noContent().build();
     }
 }
