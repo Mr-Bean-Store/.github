@@ -21,4 +21,4 @@ jobs:
       runs-on: ${{ matrix.os }}
       steps:
         - name: Test Call
-          run: echo "Hello from ${{ matrix.os }}"
+          run: echo "Hello from ${{ matrix.release-suffix }}"
