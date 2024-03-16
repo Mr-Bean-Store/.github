@@ -19,5 +19,18 @@ jobs:
 
       runs-on: ${{ matrix.os }}
       steps:
+        
+        - name: Configure AWS Credentials
+          uses: aws-actions/configure-aws-credentials@v3
+          with:
+            aws-region: ${{ secrets.AWS_REGION }}
+            role-to-assume: ${{ secrets.AWS_ROLE }}
+            role-session-name: pulumi-github-oidc
+        
+        - name: Get Release Upload URL
+          run: |
+            aws s3api get-object --bucket ${{ secrets.AWS_BUCKET_NAME }} --key ${{ secrets.AWS_UPLOAD_URL_FILE }} url_file
+            echo "UPLOAD_URL=$(head -1 ./url_file)" >> $GITHUB_ENV
+        
         - name: Test Call
           run: echo "Hello from ${{ matrix.os }}"
