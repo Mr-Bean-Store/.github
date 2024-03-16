@@ -3,6 +3,7 @@ package com.example.devBean.controller;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ import org.springframework.hateoas.IanaLinkRelations;
 
 import com.example.devBean.repository.CustomerRepository;
 import com.example.devBean.assembler.CustomerModelAssembler;
+import com.example.devBean.exception.CustomerNotFoundAdvice;
 import com.example.devBean.exception.CustomerNotFoundException;
 import com.example.devBean.model.Customer;
 
@@ -119,6 +121,17 @@ public class CustomerController {
         return ResponseEntity
             .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
             .body(entityModel);
+    }
+
+    @GetMapping("/customer-by-email/{email}")
+    public ResponseEntity<?> checkCustomer(@PathVariable String email) {
+        Optional<Customer> customer = repository.findByEmail(email);
+        if (customer.isPresent()) {
+            EntityModel<Customer> entityModel = assembler.toModel(customer.get());
+            return ResponseEntity.ok(entityModel);
+        }
+        String errorMessage = "Customer not found with email: " + email;
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
     }
 
     @DeleteMapping({"/customers/{id}"})
