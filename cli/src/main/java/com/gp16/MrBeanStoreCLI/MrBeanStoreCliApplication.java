@@ -1,16 +1,13 @@
 package com.gp16.MrBeanStoreCLI;
 
 import com.gp16.MrBeanStoreCLI.commands.MBS.MBSCommands;
-import com.gp16.MrBeanStoreCLI.commands.login.LoginCommands;
-import com.gp16.MrBeanStoreCLI.models.response.MBS.CustomerResponse;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.shell.command.annotation.EnableCommand;
 
 @SpringBootApplication
-@EnableCommand({LoginCommands.class, MBSCommands.class})
+@EnableCommand(MBSCommands.class)
 public class MrBeanStoreCliApplication {
-	public CustomerResponse customerResponse;
 
 	public static void main(String[] args) {
 		System.out.println("================================================================================");
