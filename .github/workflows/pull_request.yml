@@ -5,9 +5,9 @@ on:
       - main
       - develop
   push:
-    branches:
-      - '!main'
-      - '!develop'
+    branches-ignore:
+      - main
+      - develop
   
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
