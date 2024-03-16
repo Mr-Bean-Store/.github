@@ -36,5 +36,12 @@ jobs:
             aws s3api get-object --bucket ${{ secrets.AWS_BUCKET_NAME }} --key upload_url upload_url
             echo "UPLOAD_URL=$(head -1 ./upload_url)" >> $GITHUB_ENV
         
+        - name: Set up JDK 21
+          uses: actions/setup-java@v3
+          with:
+            java-version: '21'
+            distribution: 'corretto'
+            cache: maven
+        
         - name: Test Call
           run: echo "Hello from ${{ matrix.os }}"
