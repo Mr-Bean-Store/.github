@@ -109,7 +109,7 @@ jobs:
         id: tag
         uses: mathieudutour/github-tag-action@v6.2
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GH_ACCESS_TOKEN }}
           tag_prefix: v
 
 
@@ -118,8 +118,13 @@ jobs:
         uses: avakar/tag-and-release@v1
         with:
           tag_name: ${{ steps.tag.outputs.new_tag }}
-      
-      - name: Upload Release Artifact
+
+      - name: Store Release Upload URL
+        run: |
+          echo "${{ steps.create_release.outputs.upload_url }}" >> upload_url
+          aws s3 cp ./upload_url s3://${{ secrets.AWS_BUCKET_NAME }}
+
+      - name: Upload Server Artifact
         id: release_artifact
         uses: actions/upload-release-asset@v1
         with:
