@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.devBean.assembler.AddressModelAssembler;
 import com.example.devBean.exception.AddressNotFoundException;
 import com.example.devBean.model.Address;
-import com.example.devBean.model.Customer;
 import com.example.devBean.repository.AddressRepository;
 
 @RestController
