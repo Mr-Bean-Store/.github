@@ -32,12 +32,12 @@ jobs:
         env:
           AGENT_TOOLSDIRECTORY: /opt/hostedtoolcache
 
-      # - name: Configure AWS Credentials
-      #   uses: aws-actions/configure-aws-credentials@v3
-      #   with:
-      #     aws-region: ${{ secrets.AWS_REGION }}
-      #     role-to-assume: ${{ secrets.AWS_ROLE }}
-      #     role-session-name: pulumi-github-oidc
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+          role-session-name: pulumi-github-oidc
       
       # - name: Setup Pulumi Packages
       #   run: pip install -r requirements.txt
