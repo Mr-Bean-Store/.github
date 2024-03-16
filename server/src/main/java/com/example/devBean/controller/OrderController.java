@@ -36,6 +36,7 @@ import com.example.devBean.model.Price;
 import com.example.devBean.model.Product;
 import com.example.devBean.repository.AddressRepository;
 import com.example.devBean.repository.CustomerRepository;
+import com.example.devBean.repository.OrderItemRepository;
 import com.example.devBean.repository.OrderRepository;
 import com.example.devBean.repository.ProductRepository;
 
@@ -50,13 +51,16 @@ public class OrderController {
     private final ProductRepository productRepository;
     private final CustomerRepository customerRepository;
     private final AddressRepository addressRepository;
+    private final OrderItemRepository orderItemRepository;
 
-    public OrderController(OrderRepository repository, OrderModelAssembler assembler, ProductRepository productRepository, CustomerRepository customerRepository, AddressRepository addressRepository) {
+
+    public OrderController(OrderRepository repository, OrderModelAssembler assembler, ProductRepository productRepository, CustomerRepository customerRepository, AddressRepository addressRepository, OrderItemRepository orderItemRepository) {
         this.repository = repository;
         this.assembler = assembler;
         this.productRepository = productRepository;
         this.customerRepository = customerRepository;
         this.addressRepository = addressRepository;
+        this.orderItemRepository = orderItemRepository;
     }
 
     @GetMapping("/orders")
@@ -91,7 +95,6 @@ public class OrderController {
                                             @RequestParam Long addressId,
                                             @RequestBody List<Long> productIds) throws URISyntaxException {
 
-        // Create a new order with orderDate and arrivalDate
         LocalDate currentDate = LocalDate.now();
         Timestamp orderDate = Timestamp.valueOf(currentDate.atStartOfDay());
         Timestamp arrivalDate = Timestamp.valueOf(currentDate.plusDays(10).atStartOfDay());
@@ -108,23 +111,19 @@ public class OrderController {
 
         List<Product> products = productRepository.findAllById(productIds);
 
-        // Associate the products with the order (assuming OrderItem contains product details)
         for (Product product : products) {
             OrderItem orderItem = new OrderItem();
-            // Set other details of the order item as needed
             orderItem.setProduct(product);
-            // Associate the order item with the order
             orderItem.setOrder(newOrder);
             Random r = new Random();
             Double priceAmount = r.nextDouble(1000, 100000); // Generate a random price amount
             Price price = new Price(priceAmount, currentDate.toString());
             orderItem.setPrice(price);
+            orderItemRepository.save(orderItem);
         }
 
-        // Save the updated order with associated products
         Order updatedOrder = repository.save(newOrder);
 
-        // Return the response
         EntityModel<Order> entityModel = assembler.toModel(updatedOrder);
         return ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
@@ -156,7 +155,9 @@ public class OrderController {
 
     @DeleteMapping("/orders/{id}")
     ResponseEntity<?> deleteOrder(@PathVariable Long id) {
-        repository.deleteById(id);
+        Order order = repository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
+        System.out.print(order.toString());
+        repository.delete(order);
         return ResponseEntity.noContent().build();
     }
 }

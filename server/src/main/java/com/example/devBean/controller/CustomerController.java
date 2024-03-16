@@ -1,9 +1,11 @@
 package com.example.devBean.controller;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 //import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -99,6 +101,13 @@ public class CustomerController {
         return ResponseEntity
             .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
             .body(entityModel);
+    }
+
+    @GetMapping("/checkCustomersEmail")
+    public ResponseEntity<Boolean> checkCustomer(@PathVariable String email) {
+        List<Customer> customers = repository.findAll();
+        Boolean result = customers.stream().anyMatch(s -> s.getEmail().equals(email));
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @DeleteMapping("/customers/{id}")
