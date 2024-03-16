@@ -78,7 +78,7 @@ public class CustomerController {
             if (ex.getCause() instanceof ConstraintViolationException) {
                 ConstraintViolationException constraintEx = (ConstraintViolationException) ex.getCause();
                 String constraintName = constraintEx.getConstraintName();
-                if (constraintName != null && constraintName.startsWith("unique_constraint_name")) {
+                if (constraintName != null && constraintName.startsWith("customers_email_key")) {
                     return ResponseEntity
                         .status(HttpStatus.CONFLICT)
                         .body("Duplicate entry. Please provide unique data.");
