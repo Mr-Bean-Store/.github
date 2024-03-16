@@ -3,7 +3,11 @@ on:
   push:
     tags:
       - "*"
-  
+
+permissions:
+  id-token: write
+  contents: write
+
 jobs:
     Package-Artifacts:
       strategy:
