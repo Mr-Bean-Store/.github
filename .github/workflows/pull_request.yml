@@ -5,8 +5,9 @@ on:
       - main
       - develop
   push:
-    branches:
-      - feature/*
+    branches-ignore:
+      - main
+      - develop
   
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}

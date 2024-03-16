@@ -1,0 +1,40 @@
+name: Package Artifacts
+on: 
+  push:
+    tags:
+      - "*"
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+    Package-Artifacts:
+      if: contains(github.ref, 'main') || contains(github.ref, 'develop')
+      strategy:
+        matrix:
+          os: [ubuntu-latest, macos-latest, windows-latest]
+          include:
+            - os: ubuntu-latest
+              release-suffix: ubuntu
+            - os: macos-latest
+              release-suffix: macos
+            - os: windows-latest
+              release-suffix: windows
+
+      runs-on: ${{ matrix.os }}
+      steps:
+        - name: Configure AWS Credentials
+          uses: aws-actions/configure-aws-credentials@v3
+          with:
+            aws-region: ${{ secrets.AWS_REGION }}
+            role-to-assume: ${{ secrets.AWS_ROLE }}
+            role-session-name: pulumi-github-oidc
+        
+        - name: Get Release Upload URL
+          run: |
+            aws s3api get-object --bucket ${{ secrets.AWS_BUCKET_NAME }} --key upload_url upload_url
+            echo "UPLOAD_URL=$(head -1 ./upload_url)" >> $GITHUB_ENV
+        
+        - name: Test Call
+          run: echo "Hello from ${{ matrix.os }}"
