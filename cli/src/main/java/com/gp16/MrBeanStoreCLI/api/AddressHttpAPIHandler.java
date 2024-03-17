@@ -45,4 +45,18 @@ public class AddressHttpAPIHandler {
 
         return new MappedAddressResponse(coordinates.get(1), coordinates.get(0));
     }
+
+    public String reverseMapAddress(double latitude, double longitude) {
+        AddressResponse res = restClient.get()
+                .uri("/mapbox.places/" + latitude + "," + longitude + ".json?access_token=" + token)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .body(AddressResponse.class);
+
+        assert res != null;
+        List<GeometryResponse> features = res.features();
+        GeometryResponse feature = features.get(1);
+
+        return feature.place_name();
+    }
 }
