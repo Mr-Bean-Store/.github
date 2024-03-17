@@ -1,13 +1,10 @@
 package com.example.devBean.controller;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -155,11 +152,11 @@ public class OrderController {
         if (customer.isPresent()) {
             Customer c = customer.get();
             List<Order> orders = repository.findByCustomer(c);
-            if (orders.size() > 0) {
-                return ResponseEntity.status(HttpStatus.OK).body(orders);
-            }
-            String message = "Customer " + c.getName() + " does not have any orders";
-            return ResponseEntity.status(HttpStatus.OK).body(createEntity("message", message));
+            //if (orders.size() > 0) {
+            //    return ResponseEntity.status(HttpStatus.OK).body(orders);
+            //}
+            //String message = "Customer " + c.getName() + " does not have any orders";
+            return ResponseEntity.status(HttpStatus.OK).body(orders);
         }
 
         String errorMessage = "Customer id is invalid: " + id;
