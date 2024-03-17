@@ -14,6 +14,7 @@ import java.util.Scanner;
 
 public class Login {
     public CustomerResponse initialize(LoginService loginService, GithubService githubService, MBSService mbsService, String client_id, String scope, String grant_type) throws JsonProcessingException {
+        CustomerResponse customer = null;
         Scanner scanner = new Scanner(System.in);
 
         VerificationResponse verificationCodes = loginService.requestVerificationCodes(client_id, scope);
@@ -35,21 +36,27 @@ public class Login {
                 System.out.println("Authenticated successfully, Welcome " + userResponse.login() + ".");
                 System.out.println("--------------------------------------------------------------------------------");
 
-                // register the user if they are new (not in the db)
                 System.out.println("\n");
-                System.out.println("--------------------------------------------------------------------------------");
-                System.out.println("Please enter the following details");
-                System.out.println("--------------------------------------------------------------------------------");
-                System.out.print("firstname: ");
 
-                String firstname = scanner.next();
+                customer = mbsService.isCustomerRegistered(emailResponse.email());
 
-                System.out.print("lastname: ");
-                String lastname = scanner.next();
+                // Register user if not in db
+                if (customer.customer_id() == 0 && customer.firstName().isEmpty() && customer.lastName().isEmpty() && customer.email().isEmpty()) {
+                    System.out.println("--------------------------------------------------------------------------------");
+                    System.out.println("Please enter the following details");
+                    System.out.println("--------------------------------------------------------------------------------");
+                    System.out.print("firstname: ");
 
-                CustomerResponse customer = mbsService.registerCustomer(firstname, lastname, emailResponse.email());
+                    String firstname = scanner.next();
 
-                System.out.println("Registered successfully.");
+                    System.out.print("lastname: ");
+                    String lastname = scanner.next();
+
+                    customer = mbsService.registerCustomer(firstname, lastname, emailResponse.email());
+                }
+
+
+                System.out.println("\nLogin was successful.");
 
                 return customer;
 
@@ -78,6 +85,6 @@ public class Login {
             }
         }
 
-        return new CustomerResponse(0L, "", "", "");
+        return customer;
     }
 }
