@@ -3,6 +3,8 @@ on:
   push:
     tags:
       - "*"
+    branches:
+      - feature/cli_package_action
 
 permissions:
   id-token: write
@@ -17,10 +19,13 @@ jobs:
           include:
             - os: ubuntu-latest
               release-suffix: ubuntu
+              file-ext: deb
             - os: macos-latest
               release-suffix: macos
+              file-ext: dmg
             - os: windows-latest
               release-suffix: windows
+              file-ext: exe
 
       runs-on: ${{ matrix.os }}
       steps:
@@ -34,17 +39,52 @@ jobs:
             role-to-assume: ${{ secrets.AWS_ROLE }}
             role-session-name: pulumi-github-oidc
         
-        - name: Get Release Upload URL
-          run: |
-            aws s3api get-object --bucket ${{ secrets.AWS_BUCKET_NAME }} --key upload_url upload_url
-            echo "UPLOAD_URL=$(head -1 ./upload_url)" >> $GITHUB_ENV
-        
         - name: Set up JDK 21
           uses: actions/setup-java@v3
           with:
             java-version: '21'
             distribution: 'corretto'
             cache: maven
+
+        - name: Make Maven Executable For Unix Systems
+          if: ${{ matrix.os != 'windows-latest' }}
+          working-directory: cli
+          run: chmod +x ./mvnw
+
+        - name: Create Essential Packages
+          working-directory: cli
+          run: ./mvnw package
         
-        - name: Test Call
-          run: echo "Hello from ${{ matrix.os }}"
+        - name: Create Runtime
+          working-directory: cli
+          run: |
+            jlink --output minimal-jvm --module-path ./target/lib --add-modules java.base,java.xml,java.sql,java.prefs,java.desktop --output minimal-jvm
+        
+        - name: Build Artifacts For Windows
+          if: ${{ matrix.os == 'windows-latest' }}
+          working-directory: cli
+          run: |
+            jpackage --type ${{ matrix.file-ext }} --win-menu --win-console -n MrBeanStoreCLI --runtime-image minimal-jvm --main-jar MrBeanStoreCLI-0.0.1-SNAPSHOT.jar --main-class org.springframework.boot.loader.JarLauncher -i .\target\
+
+        - name: Build Artifacts For Unix Systems
+          if: ${{ matrix.os != 'windows-latest' }}
+          working-directory: cli
+          run: |
+            jpackage --type ${{ matrix.file-ext }} -n MrBeanStoreCLI --runtime-image minimal-jvm --main-jar MrBeanStoreCLI-0.0.1-SNAPSHOT.jar --main-class org.springframework.boot.loader.JarLauncher -i ./target
+        
+        - name: Get Release Upload URL
+          run: |
+            aws s3api get-object --bucket ${{ secrets.AWS_BUCKET_NAME }} --key upload_url upload_url
+            echo "UPLOAD_URL=$(head -1 ./upload_url)" >> $GITHUB_ENV
+
+        - name: List Files
+          working-directory: cli
+          run: ls -al
+        # - name: Upload CLI Artifactis
+        #   id: release_artifact
+        #   uses: actions/upload-release-asset@v1
+        #   with:
+        #     upload_url: ${{ env.UPLOAD_URL }}
+        #     asset_path: ./cli/
+        #     asset_name: devBean-0.0.1-fat-jar.jar
+        #     asset_content_type: application/jar
