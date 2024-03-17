@@ -20,6 +20,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       steps:
+        - name: Checkout Branch
+          uses: actions/checkout@v4
 
         - name: Configure AWS Credentials
           uses: aws-actions/configure-aws-credentials@v3
