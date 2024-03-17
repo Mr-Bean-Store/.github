@@ -51,7 +51,7 @@ jobs:
       - name: Create Runtime
         working-directory: cli
         run: |
-          jlink --output minimal-jvm --module-path ./target/lib --add-modules java.base,java.xml,java.sql,java.prefs,java.desktop
+          jlink --output minimal-jvm --module-path ./target/lib --add-modules java.base,java.xml,java.sql,java.prefs,java.desktop,jdk.crypto.cryptoki
       
       - name: Build Artifacts
         working-directory: cli
