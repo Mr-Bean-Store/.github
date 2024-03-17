@@ -58,7 +58,7 @@ jobs:
         run: echo "UPLOAD_URL=$(head -1 ./upload_url)" >> $GITHUB_ENV
 
       - name: Ubuntu
-        uses: ./.github/workflows/create-os-package
+        uses: ./.github/workflows/create-os-package.yml
         with:
           os: ubuntu-latest
           file-ext: deb
