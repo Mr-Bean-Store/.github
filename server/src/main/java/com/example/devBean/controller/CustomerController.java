@@ -24,8 +24,6 @@ import com.example.devBean.repository.CustomerRepository;
 import com.example.devBean.assembler.CustomerModelAssembler;
 import com.example.devBean.model.Customer;
 
-
-
 /**
  * We have routes for each operations (@GetMapping, @PostMapping, @PutMapping and @DeleteMapping, corresponding to HTTP GET, POST, PUT, and DELETE calls
  * The difference between PUT and POST, is that PUT is for replacing the record and therefore an id is required, and POST is for creating a new record
@@ -43,7 +41,6 @@ public class CustomerController {
 
     private final CustomerRepository repository;
     private final CustomerModelAssembler assembler;
-
     
     public CustomerController(CustomerRepository repository, CustomerModelAssembler assembler) {
         this.repository = repository;
@@ -65,10 +62,9 @@ public class CustomerController {
     ResponseEntity<?> newCustomer(@RequestBody Customer newCustomer) throws URISyntaxException {
         try {
             EntityModel<Customer> entityModel = assembler.toModel((Customer)this.repository.save(newCustomer));
-            return ResponseEntity
-                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
-                .body(entityModel);
-        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.OK).body(entityModel);
+        } 
+        catch (Exception ex) {
             if (ex.getCause() instanceof ConstraintViolationException) {
                 ConstraintViolationException constraintEx = (ConstraintViolationException) ex.getCause();
                 String constraintName = constraintEx.getConstraintName();
@@ -78,7 +74,7 @@ public class CustomerController {
                         .body("Duplicate entry. Please provide unique data.");
                 }
             }
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Data integrity violation occurred. Please check your data.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         }  
     }
 
@@ -125,6 +121,7 @@ public class CustomerController {
     @DeleteMapping({"/customers/{id}"})
     ResponseEntity<?> deleteCustomer(@PathVariable Long id) {
         this.repository.deleteById(id);
-        return ResponseEntity.noContent().build();
+        String message = "Customer account deleted successfully.";
+        return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 }

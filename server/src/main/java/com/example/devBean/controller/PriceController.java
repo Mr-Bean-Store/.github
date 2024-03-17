@@ -1,15 +1,13 @@
 package com.example.devBean.controller;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.devBean.assembler.PriceModelAssembler;
-import com.example.devBean.exception.PriceNotFoundException;
 import com.example.devBean.model.Price;
 import com.example.devBean.repository.PriceRepository;
 
@@ -46,18 +43,20 @@ public class PriceController {
     @PostMapping("/price")
     ResponseEntity<?> newPrice(@RequestBody Price newPrice) throws URISyntaxException {
         EntityModel<Price> entityModel = assembler.toModel(repository.save(newPrice));
-        return ResponseEntity // ResponseEntity is necessary because we want a more detailed HTTP response code than 200 OK
-            .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) // URI -> uniform resource identifier | URL -> uniform resource locator
-            .body(entityModel);
+        return ResponseEntity.ok(entityModel);
     }
 
     @GetMapping("/prices/{id}")
-    public EntityModel<Price> onePrice(@PathVariable Long id) {
+    public ResponseEntity<?> onePrice(@PathVariable Long id) {
 
-        Price price = repository.findById(id)
-            .orElseThrow(() -> new PriceNotFoundException(id));
+        Optional<Price> price = repository.findById(id);
+        if (price.isPresent()) {
+            EntityModel<Price> entityModel = assembler.toModel(price.get());
+            return ResponseEntity.ok(entityModel);
+        }
 
-        return assembler.toModel(price);
+        String errorMessage = "Price not found with id: " + id;
+        return ResponseEntity.status(HttpStatus.OK).body(errorMessage);
     }
 
     @PutMapping("/prices/{id}") 
@@ -77,8 +76,6 @@ public class PriceController {
 
         EntityModel<Price> entityModel = assembler.toModel(updatedPrice);
 
-        return ResponseEntity
-            .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
-            .body(entityModel);
+        return ResponseEntity.ok(entityModel);
     }
 }

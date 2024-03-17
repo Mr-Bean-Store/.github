@@ -1,12 +1,11 @@
 package com.example.devBean.controller;
 
-import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.springframework.hateoas.CollectionModel;
@@ -34,6 +33,7 @@ import com.example.devBean.repository.OrderItemRepository;
 import com.example.devBean.repository.OrderRepository;
 import com.example.devBean.repository.ProductModelRepository;
 import com.example.devBean.repository.ProductRepository;
+import com.example.devBean.repository.PriceRepository;
 
 @RestController
 public class OrderController {
@@ -45,8 +45,9 @@ public class OrderController {
     private final AddressRepository addressRepository;
     private final OrderItemRepository orderItemRepository;
     private final ProductModelRepository productModelRepository;
+    private final PriceRepository priceRepository;
 
-    public OrderController(OrderRepository repository, OrderModelAssembler assembler, ProductRepository productRepository, CustomerRepository customerRepository, AddressRepository addressRepository, OrderItemRepository orderItemRepository, ProductModelRepository productModelRepository) {
+    public OrderController(OrderRepository repository, OrderModelAssembler assembler, ProductRepository productRepository, CustomerRepository customerRepository, AddressRepository addressRepository, OrderItemRepository orderItemRepository, ProductModelRepository productModelRepository, PriceRepository priceRepository) {
         this.repository = repository;
         this.assembler = assembler;
         this.productRepository = productRepository;
@@ -54,6 +55,7 @@ public class OrderController {
         this.addressRepository = addressRepository;
         this.orderItemRepository = orderItemRepository;
         this.productModelRepository = productModelRepository;
+        this.priceRepository = priceRepository;
     }
 
     @GetMapping("/orders")
@@ -77,7 +79,7 @@ public class OrderController {
     }
 
     @PostMapping("/order")
-    ResponseEntity<?> newOrder(@RequestBody Order newOrder) throws URISyntaxException {
+    ResponseEntity<?> newOrder(@RequestBody Order newOrder) {
         EntityModel<Order> entityModel = assembler.toModel(repository.save(newOrder));
         return ResponseEntity.ok(entityModel);
     }
@@ -85,7 +87,7 @@ public class OrderController {
     @PostMapping("/create-order")
     ResponseEntity<?> newOrderFromProducts( @RequestParam Long customerId,
                                             @RequestParam Long addressId,
-                                            @RequestBody List<Long> productIds) throws URISyntaxException {
+                                            @RequestBody List<Long> productIds) {
 
         LocalDate currentDate = LocalDate.now();
         Timestamp orderDate = Timestamp.valueOf(currentDate.atStartOfDay());
@@ -100,17 +102,17 @@ public class OrderController {
 
         List<Product> products = productRepository.findAllById(productIds);
         List<OrderItem> items = new ArrayList<OrderItem>();
-
+        
         products.stream()
         .forEach(product -> {
             OrderItem orderItem = new OrderItem();
             orderItem.setProduct(product);
             orderItem.setOrder(newOrder);
 
-            Random r = new Random();
-            Double priceAmount = r.nextDouble(1000, 100000);
-            Price price = new Price(priceAmount, orderDate);
-            ProductModel model = productModelRepository.findModelByDescription("Model C").get();
+            ProductModel model = product.getModel();
+            List<Price> prices = priceRepository.findByModel(model);
+
+            Price price = prices.get(prices.size()-1); // this will use the latest price
             price.setModel(model);
 
             orderItem.setPrice(price);
