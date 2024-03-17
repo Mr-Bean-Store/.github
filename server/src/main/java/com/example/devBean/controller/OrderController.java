@@ -125,4 +125,22 @@ public class OrderController {
         EntityModel<Order> entityModel = assembler.toModel(updatedOrder);
         return ResponseEntity.ok(entityModel);
     }
+
+    @GetMapping("/customer-orders/{id}")
+    public ResponseEntity<?> getOrders(@PathVariable Long id) {
+
+        Optional<Customer> customer = customerRepository.findById(id);
+        if (customer.isPresent()) {
+            Customer c = customer.get();
+            List<Order> orders = repository.findByCustomer(c);
+            if (orders.size() > 0) {
+                return ResponseEntity.status(HttpStatus.OK).body(orders);
+            }
+            String message = "Customer " + c.getName() + " does not have any orders";
+            return ResponseEntity.status(HttpStatus.OK).body(message);
+        }
+
+        String errorMessage = "Customer id is invalid: " + id;
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+    }
 }
