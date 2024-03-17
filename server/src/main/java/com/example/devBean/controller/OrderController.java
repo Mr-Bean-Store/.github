@@ -63,7 +63,6 @@ public class OrderController {
     public CollectionModel<EntityModel<Order>> allOrders() {
         List<EntityModel<Order>> orders = repository.findAll().stream()
         .map(assembler::toModel).collect(Collectors.toList());
-
         return CollectionModel.of(orders);
     }
 
@@ -77,7 +76,7 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.OK).body(entityModel);
         }
         String errorMessage = "Order not found with id: " + id;
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createEntity("message", errorMessage));
     }
 
     @GetMapping("/order-price/{id}")
@@ -89,10 +88,10 @@ public class OrderController {
             List<OrderItem> orderItems = orderItemRepository.findByOrder(o);
             Double totalPrice = orderItems.stream().mapToDouble(item -> item.getPrice().getAmount()).sum();
             String t = Double.toString(totalPrice);
-            return ResponseEntity.status(HttpStatus.OK).body(t);
+            return ResponseEntity.status(HttpStatus.OK).body(createEntity("price", t));
         }
         String errorMessage = "Order not found with id: " + id;
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createEntity("message", errorMessage));
     }
 
     @PostMapping("/order")
@@ -111,36 +110,42 @@ public class OrderController {
         Timestamp arrivalDate = Timestamp.valueOf(currentDate.plusDays(10).atStartOfDay());
 
         Order newOrder = new Order(orderDate, arrivalDate);
-        Customer customer = customerRepository.findById(customerId).get();
-        Address address =  addressRepository.findById(addressId).get();
+        Optional<Customer> customer = customerRepository.findById(customerId);
+        Optional<Address> address =  addressRepository.findById(addressId);
 
-        newOrder.setCustomer(customer);
-        newOrder.setDelivery(address);
+        if (customer.isPresent() && address.isPresent()) {
 
-        List<Product> products = productRepository.findAllById(productIds);
-        List<OrderItem> items = new ArrayList<OrderItem>();
+            newOrder.setCustomer(customer.get());
+            newOrder.setDelivery(address.get());
+
+            List<Product> products = productRepository.findAllById(productIds);
+            List<OrderItem> items = new ArrayList<OrderItem>();
+            
+            products.stream()
+            .forEach(product -> {
+                OrderItem orderItem = new OrderItem();
+                orderItem.setProduct(product);
+                orderItem.setOrder(newOrder);
+
+                ProductModel model = product.getModel();
+                List<Price> prices = priceRepository.findByModel(model);
+
+                Price price = prices.get(prices.size()-1); // this will use the latest price
+                price.setModel(model);
+
+                orderItem.setPrice(price);
+                orderItemRepository.save(orderItem);
+
+                items.add(orderItem);
+            });
+
+            Order updatedOrder = repository.save(newOrder);
+            EntityModel<Order> entityModel = assembler.toModel(updatedOrder);
+            return ResponseEntity.ok(entityModel);
+        }
+        String errorMessage = "Customer id is invalid: " + customerId + " or address id does not exist";
+        return ResponseEntity.status(HttpStatus.OK).body(createEntity("message", errorMessage));
         
-        products.stream()
-        .forEach(product -> {
-            OrderItem orderItem = new OrderItem();
-            orderItem.setProduct(product);
-            orderItem.setOrder(newOrder);
-
-            ProductModel model = product.getModel();
-            List<Price> prices = priceRepository.findByModel(model);
-
-            Price price = prices.get(prices.size()-1); // this will use the latest price
-            price.setModel(model);
-
-            orderItem.setPrice(price);
-            orderItemRepository.save(orderItem);
-
-            items.add(orderItem);
-        });
-
-        Order updatedOrder = repository.save(newOrder);
-        EntityModel<Order> entityModel = assembler.toModel(updatedOrder);
-        return ResponseEntity.ok(entityModel);
     }
 
     @GetMapping("/customer-orders/{id}")
@@ -154,11 +159,11 @@ public class OrderController {
                 return ResponseEntity.status(HttpStatus.OK).body(orders);
             }
             String message = "Customer " + c.getName() + " does not have any orders";
-            return ResponseEntity.status(HttpStatus.OK).body(message);
+            return ResponseEntity.status(HttpStatus.OK).body(createEntity("message", message));
         }
 
         String errorMessage = "Customer id is invalid: " + id;
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createEntity("message", errorMessage));
     }
 
     public EntityModel<HashMap<String, String>> createEntity(String x, String y) {
