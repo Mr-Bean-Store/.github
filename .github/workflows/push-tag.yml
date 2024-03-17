@@ -34,7 +34,6 @@ jobs:
           run: aws s3api get-object --bucket ${{ secrets.AWS_BUCKET_NAME }} --key upload_url upload_url
 
         - name: Env Upload URL For Unix Systems
-          if: ${{ inputs.os != 'windows-latest' }}
           run: echo "UPLOAD_URL=$(head -1 ./upload_url)" >> $GITHUB_ENV
 
         - name: Ubuntu
