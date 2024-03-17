@@ -1,8 +1,8 @@
 name: Package Artifacts
 on: 
   push:
-    tags:
-      - "*"
+    # tags:
+    #   - "*"
     branches:
       - feature/cli_package_action
 
