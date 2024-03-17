@@ -1,12 +1,12 @@
 package com.example.devBean.controller;
 
 import java.net.URISyntaxException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
-//import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,24 +15,26 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
 
 import com.example.devBean.repository.CustomerRepository;
+import com.example.devBean.repository.OrderRepository;
 import com.example.devBean.assembler.CustomerModelAssembler;
-import com.example.devBean.exception.CustomerNotFoundException;
 import com.example.devBean.model.Customer;
+import com.example.devBean.model.Order;
 
 /**
  * We have routes for each operations (@GetMapping, @PostMapping, @PutMapping and @DeleteMapping, corresponding to HTTP GET, POST, PUT, and DELETE calls
  * The difference between PUT and POST, is that PUT is for replacing the record and therefore an id is required, and POST is for creating a new record
  * API Rules
  * 1. User signs up our platform using the CLI interface
- * 2. However, they sign up using their google account, so it's a social login 
+ * 2. However, they sign up using their github account, so it's a social login 
  * 3. User selects products they want to buy (user can choose buy 10 identical products), so that means a User can have 1 order item
- * 4. Customer can have multiple orders, and each order can have multiple order items. Each order item can have multiple products.
+ * 4. Customer can have multiple orders, and each order can have multiple order items. Each product can be in multiple order items and orders
  * 5. 
  *  
  */
@@ -42,77 +44,88 @@ public class CustomerController {
 
     private final CustomerRepository repository;
     private final CustomerModelAssembler assembler;
-
+    private final OrderRepository orderRepository;
     
-    public CustomerController(CustomerRepository repository, CustomerModelAssembler assembler) {
+    public CustomerController(CustomerRepository repository, CustomerModelAssembler assembler, OrderRepository order) {
         this.repository = repository;
         this.assembler = assembler;
+        this.orderRepository = order;
     }
 
     // get all customers in system
     @GetMapping("/customers")
     public CollectionModel<EntityModel<Customer>> allCustomers() {
-
         List<EntityModel<Customer>> customers = repository.findAll().stream()
         .map(assembler::toModel).collect(Collectors.toList());
-
-        return CollectionModel.of(customers,
-            linkTo(methodOn(CustomerController.class).allCustomers()).withSelfRel());
+        CollectionModel<EntityModel<Customer>> response = CollectionModel.of(customers);
+        return response;
     }
 
-    // create a new customer account, this function will save the customers details
     @PostMapping("/customer")
     ResponseEntity<?> newCustomer(@RequestBody Customer newCustomer) throws URISyntaxException {
-        System.out.println("idufidu");
-        EntityModel<Customer> entityModel = assembler.toModel(repository.save(newCustomer));
-        return ResponseEntity // ResponseEntity is necessary because we want a more detailed HTTP response code than 200 OK
-            .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) // URI -> uniform resource identifier | URL -> uniform resource locator
-            .body(entityModel);
+        try {
+            EntityModel<Customer> entityModel = assembler.toModel((Customer)this.repository.save(newCustomer));
+            return ResponseEntity.status(HttpStatus.OK).body(entityModel);
+        } 
+        catch (Exception ex) {
+            if (ex.getCause() instanceof ConstraintViolationException) {
+                ConstraintViolationException constraintEx = (ConstraintViolationException) ex.getCause();
+                String constraintName = constraintEx.getConstraintName();
+                if (constraintName != null && constraintName.startsWith("customers_email_key")) {
+                    return ResponseEntity
+                        .status(HttpStatus.CONFLICT)
+                        .body("Duplicate entry. Please provide unique data.");
+                }
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(createEntity("message", ex.getMessage()));
+        }  
     }
 
     // get one customer of the specified id in the system
     @GetMapping("/customers/{id}")
-    public EntityModel<Customer> oneCustomer(@PathVariable Long id) {
-
-        Customer customer = repository.findById(id)
-            .orElseThrow(() -> new CustomerNotFoundException(id));
-
-        return assembler.toModel(customer);
+    public ResponseEntity<?> oneCustomer(@PathVariable Long id) {
+        Optional<Customer> customer = repository.findById(id);
+        if (customer.isPresent()) {
+            EntityModel<Customer> entityModel = assembler.toModel(customer.get());
+            return ResponseEntity.ok(entityModel);
+        }
+        String errorMessage = "Customer not found with id: " + id;
+        return ResponseEntity.status(HttpStatus.OK).body(createEntity("message", errorMessage));
     }
 
-    @PutMapping("/customers/{id}") // replaces existing customer with a new customer
-    public ResponseEntity<?> replaceCustomer(@RequestBody Customer newCustomer, @PathVariable Long id) throws URISyntaxException {
+    @GetMapping("/customer-by-email/{email}")
+    public ResponseEntity<?> checkCustomer(@PathVariable String email) {
+        Optional<Customer> customer = repository.findByEmail(email);
+        if (customer.isPresent()) {
+            EntityModel<Customer> entityModel = assembler.toModel(customer.get());
+            return ResponseEntity.ok(entityModel);
+        }
 
-        Customer updatedCustomer = repository.findById(id)
-            .map(customer -> {
-                customer.setEmail(newCustomer.getEmail());
-                customer.setFirstName(newCustomer.getFirstName());
-                customer.setLastName(newCustomer.getLastName());
-                customer.setEmail(newCustomer.getEmail()); //customer.setOrders(newCustomer.getOrders());
-                return repository.save(customer);
-            })
-            .orElseGet(() -> {
-                newCustomer.setCustomerId(id);
-                return repository.save(newCustomer);
-            });
-
-        EntityModel<Customer> entityModel = assembler.toModel(updatedCustomer);
-
-        return ResponseEntity
-            .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
-            .body(entityModel);
+        String errorMessage = "Customer not found with email: " + email;
+        return ResponseEntity.status(HttpStatus.OK).body(createEntity("message", errorMessage));
     }
 
-    @GetMapping("/checkCustomersEmail")
-    public ResponseEntity<Boolean> checkCustomer(@PathVariable String email) {
-        List<Customer> customers = repository.findAll();
-        Boolean result = customers.stream().anyMatch(s -> s.getEmail().equals(email));
-        return ResponseEntity.status(HttpStatus.OK).body(result);
-    }
-
-    @DeleteMapping("/customers/{id}")
+    @DeleteMapping({"/customers/{id}"})
     ResponseEntity<?> deleteCustomer(@PathVariable Long id) {
-        repository.deleteById(id);
-        return ResponseEntity.noContent().build();
+        Optional<Customer> customer = repository.findById(id);
+        if (customer.isPresent()) {
+            List<Order> orders = orderRepository.findByCustomer(customer.get());
+            if (orders.size() > 0) {
+                String message = "Customer still has valid orders";
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(message);
+            }
+            this.repository.deleteById(id);
+            String message = "Customer deleted from system";
+            return ResponseEntity.status(HttpStatus.OK).body(createEntity("message", message));
+        }
+        String message = "Customer id is invalid.";
+        return ResponseEntity.status(HttpStatus.OK).body(createEntity("message", message));
+    }
+
+    public EntityModel<HashMap<String, String>> createEntity(String x, String y) {
+        HashMap<String, String> map = new HashMap<String, String>();
+        map.put(x, y);
+        EntityModel<HashMap<String, String>> entityModel = EntityModel.of(map);
+        return entityModel;
     }
 }

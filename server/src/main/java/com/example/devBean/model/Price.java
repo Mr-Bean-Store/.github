@@ -1,17 +1,15 @@
 package com.example.devBean.model;
 
-import java.util.List;
+import java.sql.Timestamp;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -33,14 +31,11 @@ public class Price {
     private Double amount;
 
     @Column(name = "created_date")
-    private String date;
-
-    //@OneToMany(fetch = FetchType.LAZY, mappedBy = "price", cascade = CascadeType.ALL)
-    //private List<OrderItem> items;
+    private Timestamp date;
 
     public Price() {}
 
-    public Price(Double amount, String date) {
+    public Price(Double amount, Timestamp date) {
         this.amount = amount;
         this.date = date;
     }
@@ -53,11 +48,11 @@ public class Price {
         this.amount = amount;
     }
 
-    public String getDate() {
+    public Timestamp getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(Timestamp date) {
         this.date = date;
     }
 }

@@ -1,0 +1,3 @@
+ALTER TABLE prices
+ALTER COLUMN amount
+  TYPE MONEY;
