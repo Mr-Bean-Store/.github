@@ -4,12 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gp16.MrBeanStoreCLI.api.MBSHttpAPIHandler;
 import com.gp16.MrBeanStoreCLI.models.posts.MBS.OrderObject;
 import com.gp16.MrBeanStoreCLI.models.posts.MBS.OrderPost;
-import com.gp16.MrBeanStoreCLI.models.response.MBS.MBSAddressResponse;
-import com.gp16.MrBeanStoreCLI.models.response.MBS.MappedAddressResponse;
-import com.gp16.MrBeanStoreCLI.models.response.MBS.ProductItem;
-import com.gp16.MrBeanStoreCLI.models.response.MBS.CustomerResponse;
+import com.gp16.MrBeanStoreCLI.models.response.MBS.*;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -20,6 +18,10 @@ public class MBSService {
         this.mbsHttpAPIHandler = mbsHttpAPIHandler;
     }
 
+    public CustomerResponse isCustomerRegistered(String email) throws JsonProcessingException {
+        return mbsHttpAPIHandler.isCustomerRegistered(email);
+    }
+
     public CustomerResponse registerCustomer(String firstname, String lastname, String email) throws JsonProcessingException {
         return mbsHttpAPIHandler.registerCustomer(firstname, lastname, email);
     }
@@ -28,11 +30,23 @@ public class MBSService {
         return  mbsHttpAPIHandler.getProducts();
     }
 
-    public void addToOrder(OrderObject orderObject) throws  JsonProcessingException {
-        mbsHttpAPIHandler.addToOrder(orderObject);
+    public AddedOrderResponse addToOrder(OrderObject orderObject) throws  JsonProcessingException {
+        return mbsHttpAPIHandler.addToOrder(orderObject);
     }
 
     public MBSAddressResponse addAddress(MappedAddressResponse mappedAddressResponse) throws JsonProcessingException{
         return mbsHttpAPIHandler.addAddress(mappedAddressResponse);
+    }
+
+    public List<HashMap<String, List<ProductItem>>> customerOrders(Long customer_id) throws JsonProcessingException{
+        return mbsHttpAPIHandler.customerOrders(customer_id);
+    }
+
+    public AddedOrderResponse getOrder(Long orderId) {
+        return mbsHttpAPIHandler.getOrder(orderId);
+    }
+
+    public PriceResponse orderPrice(Long orderId) {
+        return  mbsHttpAPIHandler.orderPrice(orderId);
     }
 }

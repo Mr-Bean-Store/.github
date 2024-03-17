@@ -15,4 +15,8 @@ public class AddressService {
     public MappedAddressResponse mapAddress(String address) {
         return addressHttpAPIHandler.mapAddress(address);
     }
+
+    public String reverseMapAddress(double latitude, double longitude) {
+        return addressHttpAPIHandler.reverseMapAddress(latitude, longitude);
+    }
 }
