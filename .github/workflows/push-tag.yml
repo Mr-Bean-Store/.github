@@ -88,4 +88,4 @@ jobs:
             upload_url: ${{ env.UPLOAD_URL }}
             asset_path: ./cli/${{ matrix.file-name }}
             asset_name: ${{ matrix.file-name }}
-            asset_content_type: application/${{ matrix.file-ext }}
+            asset_content_type: application/zip
