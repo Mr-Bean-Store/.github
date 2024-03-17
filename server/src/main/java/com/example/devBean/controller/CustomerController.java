@@ -32,9 +32,9 @@ import com.example.devBean.model.Customer;
  * The difference between PUT and POST, is that PUT is for replacing the record and therefore an id is required, and POST is for creating a new record
  * API Rules
  * 1. User signs up our platform using the CLI interface
- * 2. However, they sign up using their google account, so it's a social login 
+ * 2. However, they sign up using their github account, so it's a social login 
  * 3. User selects products they want to buy (user can choose buy 10 identical products), so that means a User can have 1 order item
- * 4. Customer can have multiple orders, and each order can have multiple order items. Each order item can have multiple products.
+ * 4. Customer can have multiple orders, and each order can have multiple order items. Each product can be in multiple order items and orders
  * 5. 
  *  
  */
@@ -62,7 +62,6 @@ public class CustomerController {
         return response;
     }
 
-    // create a new customer account, this function will save the customers details
     @PostMapping("/customer")
     ResponseEntity<?> newCustomer(@RequestBody Customer newCustomer) throws URISyntaxException {
         try {
@@ -100,10 +99,8 @@ public class CustomerController {
     public ResponseEntity<?> replaceCustomer(@RequestBody Customer newCustomer, @PathVariable Long id) throws URISyntaxException {
         Customer updatedCustomer = repository.findById(id)
             .map(customer -> {
-                customer.setEmail(newCustomer.getEmail());
                 customer.setFirstName(newCustomer.getFirstName());
                 customer.setLastName(newCustomer.getLastName());
-                customer.setEmail(newCustomer.getEmail()); //customer.setOrders(newCustomer.getOrders());
                 return repository.save(customer);
             })
             .orElseGet(() -> {

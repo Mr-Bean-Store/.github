@@ -8,17 +8,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
-import java.util.random.RandomGenerator;
 
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,7 +46,6 @@ public class OrderController {
     private final OrderItemRepository orderItemRepository;
     private final ProductModelRepository productModelRepository;
 
-
     public OrderController(OrderRepository repository, OrderModelAssembler assembler, ProductRepository productRepository, CustomerRepository customerRepository, AddressRepository addressRepository, OrderItemRepository orderItemRepository, ProductModelRepository productModelRepository) {
         this.repository = repository;
         this.assembler = assembler;
@@ -62,7 +58,6 @@ public class OrderController {
 
     @GetMapping("/orders")
     public CollectionModel<EntityModel<Order>> allOrders() {
-
         List<EntityModel<Order>> orders = repository.findAll().stream()
         .map(assembler::toModel).collect(Collectors.toList());
 
@@ -96,19 +91,18 @@ public class OrderController {
         Timestamp orderDate = Timestamp.valueOf(currentDate.atStartOfDay());
         Timestamp arrivalDate = Timestamp.valueOf(currentDate.plusDays(10).atStartOfDay());
 
-        
         Order newOrder = new Order(orderDate, arrivalDate);
         Customer customer = customerRepository.findById(customerId).get();
         Address address =  addressRepository.findById(addressId).get();
 
-        //if (customer.isPresent() && address.isPresent()) {
         newOrder.setCustomer(customer);
         newOrder.setDelivery(address);
 
         List<Product> products = productRepository.findAllById(productIds);
         List<OrderItem> items = new ArrayList<OrderItem>();
 
-        for (Product product : products) {
+        products.stream()
+        .forEach(product -> {
             OrderItem orderItem = new OrderItem();
             orderItem.setProduct(product);
             orderItem.setOrder(newOrder);
@@ -118,20 +112,15 @@ public class OrderController {
             Price price = new Price(priceAmount, orderDate);
             ProductModel model = productModelRepository.findModelByDescription("Model C").get();
             price.setModel(model);
-            
+
             orderItem.setPrice(price);
             orderItemRepository.save(orderItem);
 
             items.add(orderItem);
-            
-        }
+        });
 
         Order updatedOrder = repository.save(newOrder);
-
         EntityModel<Order> entityModel = assembler.toModel(updatedOrder);
         return ResponseEntity.ok(entityModel);
-
-        //String errorMessage = "Invalid customer identification in request: " + customerId + " or Invalid address in request";
-        //return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
     }
 }
