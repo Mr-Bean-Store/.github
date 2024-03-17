@@ -10,9 +10,13 @@ permissions:
   id-token: write
   contents: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
     Package-Artifacts:
-      if: contains(github.ref, 'main') || contains(github.ref, 'develop')
+      if: contains(github.ref, 'main') || contains(github.ref, 'develop') || contains(github.ref, 'cli_package_action')
       strategy:
         matrix:
           os: [ubuntu-latest, macos-latest, windows-latest]
