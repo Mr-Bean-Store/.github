@@ -1,6 +1,6 @@
 name: Create OS Package
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       os:
         required: true
