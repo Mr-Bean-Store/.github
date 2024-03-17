@@ -24,12 +24,15 @@ jobs:
             - os: ubuntu-latest
               release-suffix: ubuntu
               file-ext: deb
+              file-name: mrbeanstorecli_1.0_amd64.deb
             - os: macos-latest
               release-suffix: macos
               file-ext: dmg
+              file-name: MrBeanStoreCLI-1.0.dmg
             - os: windows-latest
               release-suffix: windows
               file-ext: exe
+              file-name: MrBeanStoreCLI-1.0.exe
 
       runs-on: ${{ matrix.os }}
       steps:
@@ -81,20 +84,11 @@ jobs:
             aws s3api get-object --bucket ${{ secrets.AWS_BUCKET_NAME }} --key upload_url upload_url
             echo "UPLOAD_URL=$(head -1 ./upload_url)" >> $GITHUB_ENV
 
-        - name: List Files For Unix Systems
-          if: ${{ matrix.os != 'windows-latest' }}
-          working-directory: cli
-          run: ls -al
-
-        - name: List Files For Windows
-          if: ${{ matrix.os == 'windows-latest' }}
-          working-directory: cli
-          run: dir
-        # - name: Upload CLI Artifactis
-        #   id: release_artifact
-        #   uses: actions/upload-release-asset@v1
-        #   with:
-        #     upload_url: ${{ env.UPLOAD_URL }}
-        #     asset_path: ./cli/
-        #     asset_name: devBean-0.0.1-fat-jar.jar
-        #     asset_content_type: application/jar
+        - name: Upload CLI Artifactis
+          id: release_artifact
+          uses: actions/upload-release-asset@v1
+          with:
+            upload_url: ${{ env.UPLOAD_URL }}
+            asset_path: ./cli/
+            asset_name: ${{ matrix.file-name }}
+            asset_content_type: application/jar
