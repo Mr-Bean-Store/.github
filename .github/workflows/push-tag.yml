@@ -1,10 +1,8 @@
 name: Package Artifacts
 on: 
   push:
-    # tags:
-    #   - "*"
-    branches:
-      - feature/cli_package_action
+    tags:
+      - "*"
 
 permissions:
   id-token: write
@@ -16,7 +14,8 @@ concurrency:
 
 jobs:
   Package-Artifacts:
-    runs-on: ubuntu-latest
+    if: contains(github.ref, 'main') || contains(github.ref, 'develop')
+    runs-on: windows-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -29,59 +28,42 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
           role-to-assume: ${{ secrets.AWS_ROLE }}
           role-session-name: pulumi-github-oidc
-
-      ## TEST
-      - name: Create Release Tag
-        id: tag
-        uses: mathieudutour/github-tag-action@v6.2
-        with:
-          github_token: ${{ secrets.GH_ACCESS_TOKEN }}
-          tag_prefix: v
-
-
-      - name: Create Release
-        id: create_release
-        uses: avakar/tag-and-release@v1
-        with:
-          tag_name: ${{ steps.tag.outputs.new_tag }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Store Release Upload URL
-        run: |
-          echo "${{ steps.create_release.outputs.upload_url }}" >> upload_url
-          aws s3 cp ./upload_url s3://${{ secrets.AWS_BUCKET_NAME }}
       
-      ## ENDTEST
       - name: Get Release Upload URL File
         run: aws s3api get-object --bucket ${{ secrets.AWS_BUCKET_NAME }} --key upload_url upload_url
 
-      - name: Env Upload URL For Unix Systems
-        run: echo "UPLOAD_URL=$(head -1 ./upload_url)" >> $GITHUB_ENV
+      - name: Env Upload URL
+        shell: pwsh
+        run: |
+          $url = Get-Content -Path ".\upload_url" -TotalCount 1
+          Add-Content -Path $env:GITHUB_ENV -Value "UPLOAD_URL=$url"
 
-      - name: Ubuntu
-        uses: ./.github/workflows/create-os-package
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
         with:
-          os: ubuntu-latest
-          file-ext: deb
-          file-name: mrbeanstorecli_1.0_amd64.deb
-          upload-url: ${{ env.UPLOAD_URL }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          java-version: '21'
+          distribution: 'corretto'
+          cache: maven
 
-      - name: MacOS
-        uses: ./.github/workflows/create-os-package
-        with:
-          os: macos-latest
-          file-ext: dmg
-          file-name: MrBeanStoreCLI-1.0.dmg
-          upload-url: ${{ env.UPLOAD_URL }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Essential Packages
+        working-directory: cli
+        run: ./mvnw package
+      
+      - name: Create Runtime
+        working-directory: cli
+        run: |
+          jlink --output minimal-jvm --module-path ./target/lib --add-modules java.base,java.xml,java.sql,java.prefs,java.desktop
+      
+      - name: Build Artifacts
+        working-directory: cli
+        run: |
+          jpackage --type exe -n MrBeanStoreCLI --runtime-image minimal-jvm --main-jar MrBeanStoreCLI-0.0.1-SNAPSHOT.jar -i .\target\ --win-menu --win-console
 
-      - name: Windows
-        uses: ./.github/workflows/create-os-package
+      - name: Upload CLI Artifactis
+        id: release_artifact
+        uses: actions/upload-release-asset@v1
         with:
-          os: windows-latest
-          file-ext: exe
-          file-name: MrBeanStoreCLI-1.0.exe
-          upload-url: ${{ env.UPLOAD_URL }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          upload_url: ${{ env.UPLOAD_URL }}
+          asset_path: ./cli/MrBeanStoreCLI-1.0.exe
+          asset_name: MrBeanStoreCLI-1.0.exe
+          asset_content_type: application/zip
