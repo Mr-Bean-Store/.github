@@ -16,78 +16,27 @@ concurrency:
 
 jobs:
     Package-Artifacts:
-      if: contains(github.ref, 'main') || contains(github.ref, 'develop')
-      strategy:
-        matrix:
-          os: [ubuntu-latest, macos-latest, windows-latest]
-          include:
-            - os: ubuntu-latest
-              release-suffix: ubuntu
-              file-ext: deb
-              file-name: mrbeanstorecli_1.0_amd64.deb
-            - os: macos-latest
-              release-suffix: macos
-              file-ext: dmg
-              file-name: MrBeanStoreCLI-1.0.dmg
-            - os: windows-latest
-              release-suffix: windows
-              file-ext: exe
-              file-name: MrBeanStoreCLI-1.0.exe
-
-      runs-on: ${{ matrix.os }}
+      runs-on: ubuntu-latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       steps:
-        - name: Checkout Branch
-          uses: actions/checkout@v4
-
-        - name: Configure AWS Credentials
-          uses: aws-actions/configure-aws-credentials@v3
+        - name: Ubuntu
+          uses: ./.github/workflows/create-os-package
           with:
-            aws-region: ${{ secrets.AWS_REGION }}
-            role-to-assume: ${{ secrets.AWS_ROLE }}
-            role-session-name: pulumi-github-oidc
-        
-        - name: Set up JDK 21
-          uses: actions/setup-java@v3
+            os: ubuntu-latest
+            file-ext: deb
+            file-name: mrbeanstorecli_1.0_amd64.deb
+
+        - name: MacOS
+          uses: ./.github/workflows/create-os-package
           with:
-            java-version: '21'
-            distribution: 'corretto'
-            cache: maven
+            os: macos-latest
+            file-ext: dmg
+            file-name: MrBeanStoreCLI-1.0.dmg
 
-        - name: Create Essential Packages
-          working-directory: cli
-          run: ${{ matrix.os != 'windows-latest' && 'chmod +x ./mvnw &&' || '' }} ./mvnw package
-        
-        - name: Create Runtime
-          working-directory: cli
-          run: |
-            jlink --output minimal-jvm --module-path ./target/lib --add-modules java.base,java.xml,java.sql,java.prefs,java.desktop
-        
-        - name: Build Artifacts
-          working-directory: cli
-          run: |
-            jpackage --type ${{ matrix.file-ext }} -n MrBeanStoreCLI --runtime-image minimal-jvm --main-jar MrBeanStoreCLI-0.0.1-SNAPSHOT.jar -i ${{ matrix.os == 'windows-latest' && '.\target\ --win-menu --win-console' || './target' }}
-
-        - name: Get Release Upload URL File
-          run: aws s3api get-object --bucket ${{ secrets.AWS_BUCKET_NAME }} --key upload_url upload_url
-
-        - name: Env Upload URL For Unix Systems
-          if: ${{ matrix.os != 'windows-latest' }}
-          run: echo "UPLOAD_URL=$(head -1 ./upload_url)" >> $GITHUB_ENV
-
-        - name: Get Release Upload URL For Windows
-          if: ${{ matrix.os == 'windows-latest' }}
-          shell: pwsh
-          run: |
-            $url = Get-Content -Path ".\upload_url" -TotalCount 1
-            Add-Content -Path $env:GITHUB_ENV -Value "UPLOAD_URL=$url"
-
-        - name: Upload CLI Artifactis
-          id: release_artifact
-          uses: actions/upload-release-asset@v1
+        - name: Windows
+          uses: ./.github/workflows/create-os-package
           with:
-            upload_url: ${{ env.UPLOAD_URL }}
-            asset_path: ./cli/${{ matrix.file-name }}
-            asset_name: ${{ matrix.file-name }}
-            asset_content_type: application/zip
+            os: windows-latest
+            file-ext: exe
+            file-name: MrBeanStoreCLI-1.0.exe
