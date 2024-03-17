@@ -1,8 +1,2 @@
 config:
   aws:region: eu-west-1
-  infrastructure:db_password:
-    secure: AAABAGxD3r8XUJrtHZlYA6BAMfHWWwgvYNd60+RKmFjZQWnCYHXCnsgJR+6GcTKIjqp/5nA=
-  infrastructure:db_user:
-    secure: AAABAJEGOz/Jd/0npoJRYw3Eh2Nii/2+Mbsqo+Sr6//d1NXyPKMAcitE10zn7RkTJg8yuSXU
-  infrastructure:ssh_key_name:
-    secure: AAABANsrXJtdwAMxVJbZ/hBuHT5i8kbom+OmY62PKZuZw65MSB1PP/JZYptaoZAR2A==
