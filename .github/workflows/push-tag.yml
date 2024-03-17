@@ -35,6 +35,8 @@ jobs:
               file-name: MrBeanStoreCLI-1.0.exe
 
       runs-on: ${{ matrix.os }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       steps:
         - name: Checkout Branch
           uses: actions/checkout@v4
