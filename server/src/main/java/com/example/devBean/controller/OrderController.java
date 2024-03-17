@@ -44,7 +44,6 @@ public class OrderController {
     private final CustomerRepository customerRepository;
     private final AddressRepository addressRepository;
     private final OrderItemRepository orderItemRepository;
-    private final ProductModelRepository productModelRepository;
     private final PriceRepository priceRepository;
 
     public OrderController(OrderRepository repository, OrderModelAssembler assembler, ProductRepository productRepository, CustomerRepository customerRepository, AddressRepository addressRepository, OrderItemRepository orderItemRepository, ProductModelRepository productModelRepository, PriceRepository priceRepository) {
@@ -54,7 +53,6 @@ public class OrderController {
         this.customerRepository = customerRepository;
         this.addressRepository = addressRepository;
         this.orderItemRepository = orderItemRepository;
-        this.productModelRepository = productModelRepository;
         this.priceRepository = priceRepository;
     }
 

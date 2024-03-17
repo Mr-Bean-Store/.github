@@ -22,8 +22,10 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
 
 import com.example.devBean.repository.CustomerRepository;
+import com.example.devBean.repository.OrderRepository;
 import com.example.devBean.assembler.CustomerModelAssembler;
 import com.example.devBean.model.Customer;
+import com.example.devBean.model.Order;
 
 /**
  * We have routes for each operations (@GetMapping, @PostMapping, @PutMapping and @DeleteMapping, corresponding to HTTP GET, POST, PUT, and DELETE calls
@@ -42,10 +44,12 @@ public class CustomerController {
 
     private final CustomerRepository repository;
     private final CustomerModelAssembler assembler;
+    private final OrderRepository orderRepository;
     
-    public CustomerController(CustomerRepository repository, CustomerModelAssembler assembler) {
+    public CustomerController(CustomerRepository repository, CustomerModelAssembler assembler, OrderRepository order) {
         this.repository = repository;
         this.assembler = assembler;
+        this.orderRepository = order;
     }
 
     // get all customers in system
@@ -116,13 +120,23 @@ public class CustomerController {
             return ResponseEntity.ok(entityModel);
         }
         String errorMessage = "Customer not found with email: " + email;
-        return ResponseEntity.status(HttpStatus.OK).body(new HashMap<String, String>() {{ put("message", errorMessage); }});
+        return ResponseEntity.status(HttpStatus.OK).body(errorMessage);
     }
 
     @DeleteMapping({"/customers/{id}"})
     ResponseEntity<?> deleteCustomer(@PathVariable Long id) {
-        this.repository.deleteById(id);
-        String message = "Customer account deleted successfully.";
+        Optional<Customer> customer = repository.findById(id);
+        if (customer.isPresent()) {
+            List<Order> orders = orderRepository.findByCustomer(customer.get());
+            if (orders.size() > 0) {
+                String message = "Customer still has valid orders";
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(message);
+            }
+            this.repository.deleteById(id);
+            String message = "Customer deleted from system";
+            return ResponseEntity.status(HttpStatus.OK).body(message);
+        }
+        String message = "Customer id is invalid.";
         return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 }
