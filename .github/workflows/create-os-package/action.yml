@@ -20,7 +20,7 @@ permissions:
 
 jobs:
   if: contains(github.ref, 'main') || contains(github.ref, 'develop') || contains(github.ref, 'tag_action') 
-  runs-on: ${{ inputs.os }}
+  runs-on: ${{ github.event.inputs.os }}
   env:
     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   steps:
@@ -36,7 +36,7 @@ jobs:
 
     - name: Create Essential Packages
       working-directory: cli
-      run: ${{ inputs.os != 'windows-latest' && 'chmod +x ./mvnw &&' || '' }} ./mvnw package
+      run: ${{ github.event.inputs.os != 'windows-latest' && 'chmod +x ./mvnw &&' || '' }} ./mvnw package
     
     - name: Create Runtime
       working-directory: cli
@@ -46,13 +46,13 @@ jobs:
     - name: Build Artifacts
       working-directory: cli
       run: |
-        jpackage --type ${{ inputs.file-ext }} -n MrBeanStoreCLI --runtime-image minimal-jvm --main-jar MrBeanStoreCLI-0.0.1-SNAPSHOT.jar -i ${{ inputs.os == 'windows-latest' && '.\target\ --win-menu --win-console' || './target' }}
+        jpackage --type ${{ github.event.inputs.file-ext }} -n MrBeanStoreCLI --runtime-image minimal-jvm --main-jar MrBeanStoreCLI-0.0.1-SNAPSHOT.jar -i ${{ github.event.inputs.os == 'windows-latest' && '.\target\ --win-menu --win-console' || './target' }}
 
     - name: Upload CLI Artifactis
       id: release_artifact
       uses: actions/upload-release-asset@v1
       with:
-        upload_url: ${{ inputs.upload_url }}
-        asset_path: ./cli/${{ inputs.file-name }}
-        asset_name: ${{ inputs.file-name }}
+        upload_url: ${{ github.event.inputs.upload_url }}
+        asset_path: ./cli/${{ github.event.inputs.file-name }}
+        asset_name: ${{ github.event.inputs.file-name }}
         asset_content_type: application/zip
