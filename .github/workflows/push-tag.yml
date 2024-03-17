@@ -4,7 +4,7 @@ on:
     # tags:
     #   - "*"
     branches:
-      - feature/cli_package_action
+      - feature/tag_action
 
 permissions:
   id-token: write

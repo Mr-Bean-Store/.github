@@ -18,8 +18,8 @@ permissions:
   id-token: write
   contents: write
 
-runs:
-  if: contains(github.ref, 'main') || contains(github.ref, 'develop') || contains(github.ref, 'cli_package_action') 
+jobs:
+  if: contains(github.ref, 'main') || contains(github.ref, 'develop') || contains(github.ref, 'tag_action') 
   runs-on: ${{ inputs.os }}
   env:
     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
