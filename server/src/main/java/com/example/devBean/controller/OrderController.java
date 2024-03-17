@@ -126,7 +126,7 @@ public class OrderController {
 
                 ProductModel model = product.getModel();
                 List<Price> prices = priceRepository.findByModel(model);
-
+                System.out.println(prices);
                 Price price = prices.get(prices.size()-1); // this will use the latest price
                 price.setModel(model);
 
@@ -145,21 +145,28 @@ public class OrderController {
         
     }
 
-    @GetMapping("/customer-orders/{id}")
-    public ResponseEntity<?> getOrders(@PathVariable Long id) {
-
-        Optional<Customer> customer = customerRepository.findById(id);
+    @GetMapping("/customer-orders/{customerId}")
+    public ResponseEntity<?> getOrders(@PathVariable Long customerId) {
+        List<HashMap<Long, List<Product>>> order_products = new ArrayList<>();
+        Optional<Customer> customer = customerRepository.findById(customerId);
         if (customer.isPresent()) {
             Customer c = customer.get();
             List<Order> orders = repository.findByCustomer(c);
-            //if (orders.size() > 0) {
-            //    return ResponseEntity.status(HttpStatus.OK).body(orders);
-            //}
-            //String message = "Customer " + c.getName() + " does not have any orders";
-            return ResponseEntity.status(HttpStatus.OK).body(orders);
+            orders.stream()
+            .forEach(order -> {
+                List<OrderItem> orderItems = orderItemRepository.findByOrder(order);
+                List<Product> products = new ArrayList<Product>();
+                orderItems.stream().forEach(orderItem -> { products.add(orderItem.getProduct()); });
+
+                HashMap<Long, List<Product>> map = new HashMap<Long, List<Product>>();
+                map.put(order.getOrderId(), products);
+                //EntityModel<HashMap<Order, List<Product>>> entityModel = EntityModel.of(map);
+                order_products.add(map);
+            });
+            return ResponseEntity.status(HttpStatus.OK).body(order_products);
         }
 
-        String errorMessage = "Customer id is invalid: " + id;
+        String errorMessage = "Customer id is invalid: " + customerId;
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createEntity("message", errorMessage));
     }
 
