@@ -19,7 +19,8 @@ permissions:
   id-token: write
   contents: write
 
-runs:
+jobs:
+  Package-Executables:
     if: contains(github.ref, 'main') || contains(github.ref, 'develop') || contains(github.ref, 'cli_package_action') 
     runs-on: ${{ inputs.os }}
     env:
