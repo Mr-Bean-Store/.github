@@ -20,12 +20,28 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       steps:
+
+        - name: Configure AWS Credentials
+          uses: aws-actions/configure-aws-credentials@v3
+          with:
+            aws-region: ${{ secrets.AWS_REGION }}
+            role-to-assume: ${{ secrets.AWS_ROLE }}
+            role-session-name: pulumi-github-oidc
+
+        - name: Get Release Upload URL File
+          run: aws s3api get-object --bucket ${{ secrets.AWS_BUCKET_NAME }} --key upload_url upload_url
+
+        - name: Env Upload URL For Unix Systems
+          if: ${{ inputs.os != 'windows-latest' }}
+          run: echo "UPLOAD_URL=$(head -1 ./upload_url)" >> $GITHUB_ENV
+
         - name: Ubuntu
           uses: ./.github/workflows/create-os-package
           with:
             os: ubuntu-latest
             file-ext: deb
             file-name: mrbeanstorecli_1.0_amd64.deb
+            upload-url: ${{ env.UPLOAD_URL }}
 
         - name: MacOS
           uses: ./.github/workflows/create-os-package
@@ -33,6 +49,7 @@ jobs:
             os: macos-latest
             file-ext: dmg
             file-name: MrBeanStoreCLI-1.0.dmg
+            upload-url: ${{ env.UPLOAD_URL }}
 
         - name: Windows
           uses: ./.github/workflows/create-os-package
@@ -40,3 +57,4 @@ jobs:
             os: windows-latest
             file-ext: exe
             file-name: MrBeanStoreCLI-1.0.exe
+            upload-url: ${{ env.UPLOAD_URL }}
