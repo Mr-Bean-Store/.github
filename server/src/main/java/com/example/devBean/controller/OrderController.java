@@ -1,10 +1,13 @@
 package com.example.devBean.controller;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -69,8 +72,24 @@ public class OrderController {
 
         Optional<Order> order = repository.findById(id);
         if (order.isPresent()) {
-            EntityModel<Order> entityModel = assembler.toModel(order.get());
-            return ResponseEntity.ok(entityModel);
+            Order o = order.get();
+            EntityModel<Order> entityModel = assembler.toModel(o);
+            return ResponseEntity.status(HttpStatus.OK).body(entityModel);
+        }
+        String errorMessage = "Order not found with id: " + id;
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+    }
+
+    @GetMapping("/order-price/{id}")
+    public ResponseEntity<?> orderPrice(@PathVariable Long id) {
+
+        Optional<Order> order = repository.findById(id);
+        if (order.isPresent()) {
+            Order o = order.get();
+            List<OrderItem> orderItems = orderItemRepository.findByOrder(o);
+            Double totalPrice = orderItems.stream().mapToDouble(item -> item.getPrice().getAmount()).sum();
+            String t = Double.toString(totalPrice);
+            return ResponseEntity.status(HttpStatus.OK).body(t);
         }
         String errorMessage = "Order not found with id: " + id;
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
@@ -140,5 +159,12 @@ public class OrderController {
 
         String errorMessage = "Customer id is invalid: " + id;
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+    }
+
+    public EntityModel<HashMap<String, String>> createEntity(String x, String y) {
+        HashMap<String, String> map = new HashMap<String, String>();
+        map.put(x, y);
+        EntityModel<HashMap<String, String>> entityModel = EntityModel.of(map);
+        return entityModel;
     }
 }

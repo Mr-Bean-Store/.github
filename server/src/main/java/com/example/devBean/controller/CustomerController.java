@@ -57,9 +57,7 @@ public class CustomerController {
     public CollectionModel<EntityModel<Customer>> allCustomers() {
         List<EntityModel<Customer>> customers = repository.findAll().stream()
         .map(assembler::toModel).collect(Collectors.toList());
-        
         CollectionModel<EntityModel<Customer>> response = CollectionModel.of(customers);
-
         return response;
     }
 
@@ -79,7 +77,7 @@ public class CustomerController {
                         .body("Duplicate entry. Please provide unique data.");
                 }
             }
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(createEntity("message", ex.getMessage()));
         }  
     }
 
@@ -92,24 +90,7 @@ public class CustomerController {
             return ResponseEntity.ok(entityModel);
         }
         String errorMessage = "Customer not found with id: " + id;
-        return ResponseEntity.status(HttpStatus.OK).body(errorMessage);
-    }
-
-    @PutMapping("/customers/{id}") // replaces existing customer with a new customer
-    public ResponseEntity<?> replaceCustomer(@RequestBody Customer newCustomer, @PathVariable Long id) throws URISyntaxException {
-        Customer updatedCustomer = repository.findById(id)
-            .map(customer -> {
-                customer.setFirstName(newCustomer.getFirstName());
-                customer.setLastName(newCustomer.getLastName());
-                return repository.save(customer);
-            })
-            .orElseGet(() -> {
-                newCustomer.setCustomerId(id);
-                return repository.save(newCustomer);
-            });
-
-        EntityModel<Customer> entityModel = assembler.toModel(updatedCustomer);
-        return ResponseEntity.ok(entityModel);
+        return ResponseEntity.status(HttpStatus.OK).body(createEntity("message", errorMessage));
     }
 
     @GetMapping("/customer-by-email/{email}")
@@ -119,8 +100,9 @@ public class CustomerController {
             EntityModel<Customer> entityModel = assembler.toModel(customer.get());
             return ResponseEntity.ok(entityModel);
         }
+
         String errorMessage = "Customer not found with email: " + email;
-        return ResponseEntity.status(HttpStatus.OK).body(errorMessage);
+        return ResponseEntity.status(HttpStatus.OK).body(createEntity("message", errorMessage));
     }
 
     @DeleteMapping({"/customers/{id}"})
@@ -134,9 +116,16 @@ public class CustomerController {
             }
             this.repository.deleteById(id);
             String message = "Customer deleted from system";
-            return ResponseEntity.status(HttpStatus.OK).body(message);
+            return ResponseEntity.status(HttpStatus.OK).body(createEntity("message", message));
         }
         String message = "Customer id is invalid.";
-        return ResponseEntity.status(HttpStatus.OK).body(message);
+        return ResponseEntity.status(HttpStatus.OK).body(createEntity("message", message));
+    }
+
+    public EntityModel<HashMap<String, String>> createEntity(String x, String y) {
+        HashMap<String, String> map = new HashMap<String, String>();
+        map.put(x, y);
+        EntityModel<HashMap<String, String>> entityModel = EntityModel.of(map);
+        return entityModel;
     }
 }
