@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   Package-Artifacts:
-    if: contains(github.ref, 'main') || contains(github.ref, 'develop')
+    if: contains(github.ref, 'main')
     runs-on: windows-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
