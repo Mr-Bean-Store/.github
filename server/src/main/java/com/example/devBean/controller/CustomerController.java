@@ -1,6 +1,7 @@
 package com.example.devBean.controller;
 
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -115,7 +116,7 @@ public class CustomerController {
             return ResponseEntity.ok(entityModel);
         }
         String errorMessage = "Customer not found with email: " + email;
-        return ResponseEntity.status(HttpStatus.OK).body(errorMessage);
+        return ResponseEntity.status(HttpStatus.OK).body(new HashMap<String, String>() {{ put("message", errorMessage); }});
     }
 
     @DeleteMapping({"/customers/{id}"})
