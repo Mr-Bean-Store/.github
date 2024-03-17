@@ -81,9 +81,15 @@ jobs:
             aws s3api get-object --bucket ${{ secrets.AWS_BUCKET_NAME }} --key upload_url upload_url
             echo "UPLOAD_URL=$(head -1 ./upload_url)" >> $GITHUB_ENV
 
-        - name: List Files
+        - name: List Files For Unix Systems
+          if: ${{ matrix.os != 'windows-latest' }}
           working-directory: cli
           run: ls -al
+
+        - name: List Files For Windows
+          if: ${{ matrix.os == 'windows-latest' }}
+          working-directory: cli
+          run: dir
         # - name: Upload CLI Artifactis
         #   id: release_artifact
         #   uses: actions/upload-release-asset@v1
