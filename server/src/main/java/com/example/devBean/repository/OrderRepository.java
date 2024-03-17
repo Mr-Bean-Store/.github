@@ -10,6 +10,6 @@ import com.example.devBean.model.OrderItem;
 import com.example.devBean.repository.OrderItemRepository;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    
     List<Order> findByCustomer(Customer customer);
+    List<OrderItem> findByOrderId(Long orderId);
 }

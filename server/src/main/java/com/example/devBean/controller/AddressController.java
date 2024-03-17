@@ -40,7 +40,7 @@ public class AddressController {
 
     @PostMapping("/address")
     ResponseEntity<?> newAddress(@RequestBody Address address) throws URISyntaxException {
-        EntityModel<Address> entityModel = assembler.toModel(repository.save(address));
+        EntityModel<Address> entityModel = EntityModel.of(repository.save(address));
         return ResponseEntity.ok(entityModel);
     }
 
@@ -49,7 +49,7 @@ public class AddressController {
 
         Optional<Address> address = repository.findById(id);
         if (address.isPresent()) {
-            EntityModel<Address> entityModel = assembler.toModel(address.get());
+            EntityModel<Address> entityModel = EntityModel.of(address.get());
             return ResponseEntity.ok(entityModel);
         }
         String errorMessage = "Address not found with id: " + id;
