@@ -14,9 +14,6 @@ on:
       upload-url:
         required: true
         type: string
-permissions:
-  id-token: write
-  contents: write
 
 jobs:
   if: contains(github.ref, 'main') || contains(github.ref, 'develop') || contains(github.ref, 'tag_action') 

@@ -8,7 +8,7 @@ on:
     branches-ignore:
       - main
       - develop
-      - feature/cli_package_action
+      - feature/tag_action
   
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
