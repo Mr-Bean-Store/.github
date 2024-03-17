@@ -69,11 +69,18 @@ jobs:
           run: |
             jpackage --type ${{ matrix.file-ext }} -n MrBeanStoreCLI --runtime-image minimal-jvm --main-jar MrBeanStoreCLI-0.0.1-SNAPSHOT.jar --main-class org.springframework.boot.loader.JarLauncher -i ${{ matrix.os == 'windows-latest' && '.\target\ --win-menu --win-console' || './target' }}
 
-        - name: Get Release Upload URL
-          run: |
-            aws s3api get-object --bucket ${{ secrets.AWS_BUCKET_NAME }} --key upload_url upload_url
-            echo "UPLOAD_URL=$(head -1 ./upload_url)" >> $GITHUB_ENV
+        - name: Get Release Upload URL File
+          run: aws s3api get-object --bucket ${{ secrets.AWS_BUCKET_NAME }} --key upload_url upload_url
 
+        - name: Env Upload URL For Unix Systems
+          if: ${{ matrix.os != 'windows-latest' }}
+          run: echo "UPLOAD_URL=$(head -1 ./upload_url)" >> $GITHUB_ENV
+
+        - name: Get Release Upload URL For Windows
+          run: |
+            set /p url=<"upload_url"
+            echo "UPLOAD_URL=%url%" >> $GITHUB_ENV
+            
         - name: Upload CLI Artifactis
           id: release_artifact
           uses: actions/upload-release-asset@v1
