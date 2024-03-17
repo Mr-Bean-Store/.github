@@ -101,7 +101,7 @@ jobs:
           shell: pwsh
           run: |
             $url = Get-Content -Path "upload_url" -TotalCount 1
-            echo "::set-env name=UPLOAD_URL::$url"
+            echo "UPLOAD_URL=$url" >> $GITHUB_ENV
 
         - name: Upload CLI Artifactis
           id: release_artifact
