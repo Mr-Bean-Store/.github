@@ -10,6 +10,7 @@ import com.gp16.MrBeanStoreCLI.services.MBS.AddressService;
 import com.gp16.MrBeanStoreCLI.services.MBS.MBSService;
 import com.gp16.MrBeanStoreCLI.services.login.GithubService;
 import com.gp16.MrBeanStoreCLI.services.login.LoginService;
+import com.gp16.MrBeanStoreCLI.validations.Validations;
 import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -33,6 +34,7 @@ public class MBSCommands {
 
     Login login = new Login();
     OutputFormatter outputFormatter = new OutputFormatter();
+    Validations validations = new Validations();
     OrdersOutputFormatter ordersOutputFormatter = new OrdersOutputFormatter();
     Scanner scanner = new Scanner(System.in);
 
@@ -55,7 +57,7 @@ public class MBSCommands {
         List<ProductItem> models = mbsService.getProducts();
 
         System.out.println("================================================================================");
-        System.out.println("\t\t\t\t\t\t\tProduct Catalog");
+        System.out.println("\t\t\tProduct Catalog");
         System.out.println("================================================================================");
         System.out.println("Use the `select` command to select the products of your choice and add them to your order");
 
@@ -67,6 +69,7 @@ public class MBSCommands {
         System.out.println("Enter the id of the product you want to select from the catalog and click enter.");
         System.out.println("Enter -1 to complete your selection\n");
 
+        List<Integer> modelIds = mbsService.getProducts().stream().map(productItem -> productItem.model().model_id()).toList();
         List<Integer> selected = new ArrayList<>();
 
         while (scanner.hasNext()) {
@@ -74,7 +77,13 @@ public class MBSCommands {
 
             if (id == -1) break;
 
-            selected.add(id);
+            if (validations.isValidModelId(id, modelIds)) {
+                selected.add(id);
+            } else {
+                System.out.println("Please enter a valid model id. run the `products` command to see the available models");
+            }
+
+
         }
 
         if (!selected.isEmpty()) {
@@ -104,8 +113,6 @@ public class MBSCommands {
             OrderObject orderObject = new OrderObject(customer.customer_id(), addedAddress.addressId(), selected);
 
             AddedOrderResponse addedOrderResponse = mbsService.addToOrder(orderObject);
-            System.out.println(addedOrderResponse);
-
         }
 
         return selected.isEmpty() ? "Cancelled" : "Successfully added to order.";

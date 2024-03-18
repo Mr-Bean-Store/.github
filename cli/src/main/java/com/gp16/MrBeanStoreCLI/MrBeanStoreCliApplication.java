@@ -11,7 +11,7 @@ public class MrBeanStoreCliApplication {
 
 	public static void main(String[] args) {
 		System.out.println("================================================================================");
-		System.out.println("\t\t\t\t\t\t\tWelcome to Mr Bean Store");
+		System.out.println("\t\t\tWelcome to Mr Bean Store");
 		System.out.println("================================================================================");
 
 		System.out.println("You can use the `help` command to see all the command you can use.");
