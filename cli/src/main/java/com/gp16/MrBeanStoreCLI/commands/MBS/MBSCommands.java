@@ -5,24 +5,21 @@ import com.gp16.MrBeanStoreCLI.flows.login.Login;
 import com.gp16.MrBeanStoreCLI.formatter.OrdersOutputFormatter;
 import com.gp16.MrBeanStoreCLI.formatter.OutputFormatter;
 import com.gp16.MrBeanStoreCLI.models.posts.MBS.OrderObject;
-import com.gp16.MrBeanStoreCLI.models.posts.MBS.OrderPost;
 import com.gp16.MrBeanStoreCLI.models.response.MBS.*;
-import com.gp16.MrBeanStoreCLI.models.response.login.AccessTokenResponse;
-import com.gp16.MrBeanStoreCLI.models.response.login.EmailResponse;
-import com.gp16.MrBeanStoreCLI.models.response.login.UserResponse;
-import com.gp16.MrBeanStoreCLI.models.response.login.VerificationResponse;
 import com.gp16.MrBeanStoreCLI.services.MBS.AddressService;
 import com.gp16.MrBeanStoreCLI.services.MBS.MBSService;
 import com.gp16.MrBeanStoreCLI.services.login.GithubService;
 import com.gp16.MrBeanStoreCLI.services.login.LoginService;
-import org.springframework.shell.command.annotation.Command;
+import org.springframework.shell.Availability;
+import org.springframework.shell.standard.ShellComponent;
+import org.springframework.shell.standard.ShellMethod;
+import org.springframework.shell.standard.ShellMethodAvailability;
 
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Stream;
 
-@Command(group = "MR BEAN STORE COMMANDS")
+@ShellComponent
 public class MBSCommands {
     private final String client_id = "f3c5acce35108a97090a";
     private final String grant_type = "urn:ietf:params:oauth:grant-type:device_code";
@@ -46,14 +43,14 @@ public class MBSCommands {
         this.addressService = addressService;
     }
 
-    @Command(command = "login", description = "It logs the user in using github oauth.")
+    @ShellMethod(key = "login", value = "It logs the user in using github oauth.")
     public void login() throws JsonProcessingException {
         System.out.println("Loading...");
 
         customer = login.initialize(loginService, githubService, mbsService, client_id, scope, grant_type);
     }
 
-    @Command(command = "products", description = "It displays the products in our catalog")
+    @ShellMethod(key = "products", value = "It displays the products in our catalog")
     public String products() {
         List<ProductItem> models = mbsService.getProducts();
 
@@ -65,7 +62,7 @@ public class MBSCommands {
         return outputFormatter.formatToTable(models);
     }
 
-    @Command(command = "select", description = "select products from catalog to add them to order")
+    @ShellMethod(key = "select", value = "select products from catalog to add them to order")
     public String select() throws JsonProcessingException {
         System.out.println("Enter the id of the product you want to select from the catalog and click enter.");
         System.out.println("Enter -1 to complete your selection\n");
@@ -114,7 +111,7 @@ public class MBSCommands {
         return selected.isEmpty() ? "Cancelled" : "Successfully added to order.";
     }
 
-    @Command(command = "view orders", description = "It displays all orders of the customer")
+    @ShellMethod(key = "view orders", value = "It displays all orders of the customer")
     public String customerOrders() throws JsonProcessingException {
         List<HashMap<String, List<ProductItem>>> response = mbsService.customerOrders(customer.customer_id());
 
@@ -148,5 +145,12 @@ public class MBSCommands {
         });
 
         return ordersOutputFormatter.formatToTable(orders);
+    }
+
+    @ShellMethodAvailability({"products", "select", "view orders"})
+    public Availability availabilityCheck() {
+        return customer != null
+                ? Availability.available()
+                : Availability.unavailable("You have login by running the `login` command to access the commands");
     }
 }

@@ -3,10 +3,10 @@ package com.gp16.MrBeanStoreCLI;
 import com.gp16.MrBeanStoreCLI.commands.MBS.MBSCommands;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.shell.command.annotation.EnableCommand;
+import org.springframework.shell.command.annotation.CommandScan;
 
 @SpringBootApplication
-@EnableCommand(MBSCommands.class)
+@CommandScan
 public class MrBeanStoreCliApplication {
 
 	public static void main(String[] args) {
